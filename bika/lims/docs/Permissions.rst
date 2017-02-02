@@ -67,6 +67,11 @@ Bika Setup
 Bika Setup is a folderish object, which handles the labs' configuration items, like
 Laboratory information, Instruments, Analysis Services etc.
 
+.. Note::
+
+    All `base_views` with this folder are protected by the `bika.lims.ManageBika` permission.
+    Please see `bika/lims/controlpanel/configure.zcml` for further details.
+
 Test Workflow
 .............
 
@@ -478,26 +483,26 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", methods)
-    ['Anonymous', 'Authenticated', 'Manager', 'Member']
+    ['Anonymous', 'Authenticated']
 
     >>> get_roles_for_permission("View", method)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", methods)
-    ['Anonymous', 'Authenticated', 'Manager', 'Member']
+    ['Anonymous', 'Authenticated']
 
     >>> get_roles_for_permission("Access contents information", method)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", methods)
-    ['Anonymous', 'Authenticated', 'Member']
+    ['Anonymous', 'Authenticated']
 
     >>> get_roles_for_permission("List folder contents", method)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
@@ -547,3 +552,112 @@ Anonymous should not be able to edit a `method`::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+
+Analysis Service(s)
+-------------------
+
+Analysis services describe which "products" the lab offers.
+
+Test Workflow
+.............
+
+A `analysisservice` lives in the `bika_setup/bika_analysisservices` folder::
+
+    >>> analysisservices = bika_setup.bika_analysisservices
+    >>> analysisservice = create(analysisservices, "AnalysisService")
+
+The `bika_analysisservices` folder follows the `bika_one_state_workflow` and is
+initially in the `active` state::
+
+    >>> get_workflows_for(analysisservices)
+    ('bika_one_state_workflow',)
+
+    >>> get_workflow_status_of(analysisservices)
+    'active'
+
+A `analysisservice` follows the `bika_inactive_workflow` and has an initial state of `active`::
+
+    >>> get_workflows_for(analysisservice)
+    ('bika_inactive_workflow',)
+
+    >>> get_workflow_status_of(analysisservices)
+    'active'
+
+Test Permissions
+................
+
+Exactly these roles have should have a `View` permission::
+
+    >>> get_roles_for_permission("View", analysisservices)
+    ['Anonymous', 'Authenticated']
+
+    >>> get_roles_for_permission("View", analysisservice)
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+
+Exactly these roles have should have the `Access contents information` permission::
+
+    >>> get_roles_for_permission("Access contents information", analysisservices)
+    ['Anonymous', 'Authenticated']
+
+    >>> get_roles_for_permission("Access contents information", analysisservice)
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+
+Exactly these roles have should have the `List folder contents` permission::
+
+    >>> get_roles_for_permission("List folder contents", analysisservices)
+    ['Authenticated']
+
+    >>> get_roles_for_permission("List folder contents", analysisservice)
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+
+Exactly these roles have should have the `Modify portal content` permission::
+
+    >>> get_roles_for_permission("Modify portal content", analysisservices)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+
+    >>> get_roles_for_permission("Modify portal content", analysisservice)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+
+Exactly these roles have should have the `Delete objects` permission::
+
+    >>> get_roles_for_permission("Delete objects", analysisservices)
+    ['Manager']
+
+    >>> get_roles_for_permission("Delete objects", analysisservice)
+    ['Manager']
+
+Anonymous Browser Test
+......................
+
+Ensure we are logged out::
+
+    >>> logout()
+
+Anonymous should not be able to view the `bika_analysisservices` folder::
+
+    >>> browser.open(analysisservices.absolute_url() + "/base_view")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous are **allowed** to view a `analysisservice`::
+
+    >>> browser.open(analysisservice.absolute_url() + "/base_view")
+    >>> "analysisservice-1" in browser.contents
+    True
+
+Anonymous should not be able to edit the `bika_analysisservices` folder::
+
+    >>> browser.open(analysisservices.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous should not be able to edit a `analysisservice`::
+
+    >>> browser.open(analysisservice.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+

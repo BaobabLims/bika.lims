@@ -415,9 +415,9 @@ class BikaGenerator:
         # Please refer to the workflow definition to see the default permissions
         mp = portal.methods.manage_permission
         # We set explicit permissions to access methods to be persistent with the assigned workflow
-        mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 0)
-        mp(permissions.ListFolderContents, ['Member', 'Authenticated', 'Anonymous'], 0)
-        mp(permissions.AccessContentsInformation, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 0)
+        mp(permissions.View, ['Authenticated', 'Anonymous'], 0)
+        mp(permissions.ListFolderContents, ['Authenticated', 'Anonymous'], 0)
+        mp(permissions.AccessContentsInformation, ['Authenticated', 'Anonymous'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
@@ -435,12 +435,16 @@ class BikaGenerator:
         except:
             pass
 
+        # Analysis Services
         # Add Analysis Services View permission to Clients
         # (allow Clients to add attachments to Analysis Services from an AR)
         mp = portal.bika_setup.bika_analysisservices.manage_permission
-        mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
-        mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
+        # We set explicit permissions to access methods to be persistent with the assigned workflow
+        mp(permissions.View, ['Authenticated', 'Anonymous'], 0)
+        mp(permissions.ListFolderContents, ['Authenticated'], 0)
+        mp(permissions.AccessContentsInformation, ['Authenticated', 'Anonymous'], 0)
         portal.bika_setup.bika_analysisservices.reindexObject()
+        # /Analysis Services
 
         # Add Attachment Types View permission to Clients
         # (allow Clients to add attachments to Analysis Services from an AR)
