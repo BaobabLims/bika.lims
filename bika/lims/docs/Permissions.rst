@@ -10,6 +10,7 @@ Test Setup
 ==========
 
     >>> from plone import api as ploneapi
+    >>> from AccessControl.PermissionRole import rolesForPermissionOn
 
     >>> portal = self.getPortal()
     >>> portal_url = portal.absolute_url()
@@ -17,13 +18,9 @@ Test Setup
     >>> bika_setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()
 
-    >>> def get_roles_of_permission(context, permission, *roles):
-    ...     # Merges the given roles with the granted roles for comparison
-    ...     permissions = context.rolesOfPermission(permission)
-    ...     granted = filter(lambda role: role, map(
-    ...                      lambda permission: permission.get("selected") == "SELECTED"
-    ...                          and permission.get("name") or None, permissions))
-    ...     return sorted(set(granted).union(set(roles)))
+    >>> def get_roles_for_permission(permission, context):
+    ...     allowed = set(rolesForPermissionOn(permission, context))
+    ...     return sorted(allowed)
 
     >>> def create(container, portal_type, title=None):
     ...     # Creates a content in a container and manually calls processForm
@@ -85,42 +82,42 @@ Test Permissions
 
 Exactly these roles have should have a `View` permission::
 
-    >>> get_roles_of_permission(labcontacts, "View")
+    >>> get_roles_for_permission("View", labcontacts)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(labcontact, "View")
+    >>> get_roles_for_permission("View", labcontact)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
-    >>> get_roles_of_permission(labcontacts, "Access contents information")
+    >>> get_roles_for_permission("Access contents information", labcontacts)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(labcontact, "Access contents information")
+    >>> get_roles_for_permission("Access contents information", labcontact)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
-    >>> get_roles_of_permission(labcontacts, "List folder contents")
+    >>> get_roles_for_permission("List folder contents", labcontacts)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(labcontact, "List folder contents")
+    >>> get_roles_for_permission("List folder contents", labcontact)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
-    >>> get_roles_of_permission(labcontacts, "Modify portal content")
+    >>> get_roles_for_permission("Modify portal content", labcontacts)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(labcontact, "Modify portal content")
+    >>> get_roles_for_permission("Modify portal content", labcontact)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Delete objects` permission::
 
-    >>> get_roles_of_permission(labcontacts, "Delete objects")
+    >>> get_roles_for_permission("Delete objects", labcontacts)
     ['Manager']
 
-    >>> get_roles_of_permission(labcontact, "Delete objects")
+    >>> get_roles_for_permission("Delete objects", labcontact)
     ['Manager']
 
 Anonymous Browser Test
@@ -190,42 +187,42 @@ Test Permissions
 
 Exactly these roles have should have a `View` permission::
 
-    >>> get_roles_of_permission(instruments, "View")
+    >>> get_roles_for_permission("View", instruments)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(instrument, "View")
+    >>> get_roles_for_permission("View", instrument)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
-    >>> get_roles_of_permission(instruments, "Access contents information")
+    >>> get_roles_for_permission("Access contents information", instruments)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(instrument, "Access contents information")
+    >>> get_roles_for_permission("Access contents information", instrument)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
-    >>> get_roles_of_permission(instruments, "List folder contents")
+    >>> get_roles_for_permission("List folder contents", instruments)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(instrument, "List folder contents")
+    >>> get_roles_for_permission("List folder contents", instrument)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
-    >>> get_roles_of_permission(instruments, "Modify portal content")
+    >>> get_roles_for_permission("Modify portal content", instruments)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(instrument, "Modify portal content")
+    >>> get_roles_for_permission("Modify portal content", instrument)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Delete objects` permission::
 
-    >>> get_roles_of_permission(instruments, "Delete objects")
+    >>> get_roles_for_permission("Delete objects", instruments)
     ['Manager']
 
-    >>> get_roles_of_permission(instrument, "Delete objects")
+    >>> get_roles_for_permission("Delete objects", instrument)
     ['Manager']
 
 Anonymous Browser Test
@@ -273,7 +270,6 @@ Methods should be viewable by unauthenticated users for information purpose.
     `setuphandler` during the installation. Thus, the permissions deviate from
     the assigned workflow.
 
-
 Test Workflow
 .............
 
@@ -302,44 +298,53 @@ A `method` follows the `bika_inactive_workflow` and has an initial state of `act
 Test Permissions
 ................
 
+.. Note::
+
+    A method should have the its own defined roles for a certain permssion from
+    the `bika_inactive_workflow` and the inherited roles from its parent folder,
+    which got customized in the `setuphandler` explicitly. Therefore, please
+    refer to both, the assigned workflow and the setuphandler for the merged set
+    of alloed roles for a permission.
+
+
 Exactly these roles have should have a `View` permission::
 
-    >>> get_roles_of_permission(methods, "View")
+    >>> get_roles_for_permission("View", methods)
     ['Anonymous', 'Authenticated', 'Manager', 'Member']
 
-    >>> get_roles_of_permission(method, "View")
-    ['Anonymous', 'Authenticated', 'Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    >>> get_roles_for_permission("View", method)
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
-    >>> get_roles_of_permission(methods, "Access contents information")
+    >>> get_roles_for_permission("Access contents information", methods)
     ['Anonymous', 'Authenticated', 'Manager', 'Member']
 
-    >>> get_roles_of_permission(method, "Access contents information")
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    >>> get_roles_for_permission("Access contents information", method)
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
-    >>> get_roles_of_permission(methods, "List folder contents")
+    >>> get_roles_for_permission("List folder contents", methods)
     ['Anonymous', 'Authenticated', 'Member']
 
-    >>> get_roles_of_permission(method, "List folder contents")
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    >>> get_roles_for_permission("List folder contents", method)
+    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
-    >>> get_roles_of_permission(methods, "Modify portal content")
+    >>> get_roles_for_permission("Modify portal content", methods)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
-    >>> get_roles_of_permission(method, "Modify portal content")
+    >>> get_roles_for_permission("Modify portal content", method)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Delete objects` permission::
 
-    >>> get_roles_of_permission(methods, "Delete objects")
+    >>> get_roles_for_permission("Delete objects", methods)
     ['LabManager', 'Manager']
 
-    >>> get_roles_of_permission(method, "Delete objects")
+    >>> get_roles_for_permission("Delete objects", method)
     ['Manager']
 
 Anonymous Browser Test
