@@ -465,6 +465,9 @@
     </type>
 
     <!-- Sampling Rounds -->
+    <type type_id="SamplingRounds">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
+    </type>
     <type type_id="SamplingRound">
       <bound-workflow workflow_id="bika_samplinground_workflow"/>
       <bound-workflow workflow_id="bika_cancellation_workflow"/>
