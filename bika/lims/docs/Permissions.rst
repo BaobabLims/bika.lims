@@ -11,12 +11,24 @@ Test Setup
 
     >>> from plone import api as ploneapi
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
+    >>> from Products.PloneTestCase.setup import portal_owner, default_password
 
     >>> portal = self.getPortal()
     >>> portal_url = portal.absolute_url()
     >>> bika_setup = portal.bika_setup
     >>> bika_setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()
+
+    >>> def login(user=portal_owner, password=default_password):
+    ...     browser.open(portal_url + "/login_form")
+    ...     browser.getControl(name='__ac_name').value = user
+    ...     browser.getControl(name='__ac_password').value = password
+    ...     browser.getControl(name='submit').click()
+    ...     assert("You are now logged in" in browser.contents)
+
+    >>> def logout():
+    ...     browser.open(portal_url + "/logout")
+    ...     assert("You are now logged out" in browser.contents)
 
     >>> def get_roles_for_permission(permission, context):
     ...     allowed = set(rolesForPermissionOn(permission, context))
@@ -45,6 +57,80 @@ Test Workflows and Permissions
 
 Workflows control the allowed roles for specific permissions.
 A role is a container for several permissions.
+
+
+Bika Setup
+----------
+
+Bika Setup is a folderish object, which handles the labs' configuration items, like
+Laboratory information, Instruments, Analysis Services etc.
+
+Test Workflow
+.............
+
+A `bika_setup` lives in the root of a bika installation, or more precisely, the
+portal object::
+
+    >>> bika_setup = portal.bika_setup
+
+The `bika_bika_setup` folder follows the `bika_one_state_workflow` and is
+initially in the `active` state::
+
+    >>> get_workflows_for(bika_setup)
+    ('bika_one_state_workflow',)
+
+    >>> get_workflow_status_of(bika_setup)
+    'active'
+
+
+Test Permissions
+................
+
+Exactly these roles have should have a `View` permission::
+
+    >>> get_roles_for_permission("View", bika_setup)
+    ['Authenticated']
+
+Exactly these roles have should have the `Access contents information` permission::
+
+    >>> get_roles_for_permission("Access contents information", bika_setup)
+    ['Authenticated']
+
+Exactly these roles have should have the `List folder contents` permission::
+
+    >>> get_roles_for_permission("List folder contents", bika_setup)
+    ['Authenticated']
+
+Exactly these roles have should have the `Modify portal content` permission::
+
+    >>> get_roles_for_permission("Modify portal content", bika_setup)
+    ['LabManager', 'Manager']
+
+Exactly these roles have should have the `Delete objects` permission::
+
+    >>> get_roles_for_permission("Delete objects", bika_setup)
+    ['Manager']
+
+Anonymous Browser Test
+......................
+
+Ensure we are logged out::
+
+    >>> logout()
+
+Anonymous should not be able to view the `bika_bika_setup` folder::
+
+    >>> browser.open(bika_setup.absolute_url() + "/base_view")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous should not be able to edit the `bika_bika_setup` folder::
+
+    >>> browser.open(bika_setup.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
 
 
 Lab Contact(s)
@@ -122,6 +208,10 @@ Exactly these roles have should have the `Delete objects` permission::
 
 Anonymous Browser Test
 ......................
+
+Ensure we are logged out::
+
+    >>> logout()
 
 Anonymous should not be able to view the `bika_labcontacts` folder::
 
@@ -227,6 +317,10 @@ Exactly these roles have should have the `Delete objects` permission::
 
 Anonymous Browser Test
 ......................
+
+Ensure we are logged out::
+
+    >>> logout()
 
 Anonymous should not be able to view the `bika_instruments` folder::
 
@@ -349,6 +443,10 @@ Exactly these roles have should have the `Delete objects` permission::
 
 Anonymous Browser Test
 ......................
+
+Ensure we are logged out::
+
+    >>> logout()
 
 Anonymous should not be able to view the `methods` folder::
 

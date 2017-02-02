@@ -274,14 +274,20 @@ class BikaGenerator:
 
         mp(ViewLogTab, ['Manager', 'LabManager'], 1)
 
+        # Bika Setup
+        # The `/bika_setup` folder follows the `bika_one_state_workflow`.
+        # Please refer to the workflow definition to see the default permissions
         mp = portal.bika_setup.manage_permission
-        mp('Access contents information', ['Authenticated', 'Analyst'], 1)
+        # We set explicit permissions to access methods to be persistent with the assigned workflow
+        mp(permissions.View, ['Authenticated'], 0)
+        mp(permissions.ListFolderContents, ['Authenticated'], 0)
+        mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
-        mp(permissions.View, ['Authenticated', 'Analyst'], 1)
-        mp(ApplyVersionControl, ['Authenticated'], 1)
-        mp(SaveNewVersion, ['Authenticated'], 1)
-        mp(AccessPreviousVersions, ['Authenticated'], 1)
+        mp(ApplyVersionControl, ['Authenticated'], 0)
+        mp(SaveNewVersion, ['Authenticated'], 0)
+        mp(AccessPreviousVersions, ['Authenticated'], 0)
         portal.bika_setup.reindexObject()
+        # /Bika Setup
 
         mp = portal.bika_setup.laboratory.manage_permission
         mp('Access contents information', ['Authenticated'], 1)
@@ -399,8 +405,8 @@ class BikaGenerator:
         portal.pricelists.reindexObject()
 
         # Methods
-        # The `/method` folder needs to be visible for unauthenticated users.
-        # Therefore, the assigned `bika_one_state_workflow` needs to get changed.
+        # The `/method` folder follows the `bika_one_state_workflow`
+        # Please refer to the workflow definition to see the default permissions
         mp = portal.methods.manage_permission
         # We set explicit permissions to access methods to be persistent with the assigned workflow
         mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 0)
