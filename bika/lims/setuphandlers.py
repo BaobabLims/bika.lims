@@ -398,14 +398,17 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
-        # /methods folder permissions
+        # Methods
+        # The `/method` folder needs to be visible for unauthenticated users.
+        # Therefore, the assigned `bika_one_state_workflow` needs to get changed.
         mp = portal.methods.manage_permission
-        mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-        mp(permissions.ListFolderContents, ['Member', 'Authenticated', 'Anonymous'], 1)
+        # We set explicit permissions to access methods to be persistent with the assigned workflow
+        mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 0)
+        mp(permissions.ListFolderContents, ['Member', 'Authenticated', 'Anonymous'], 0)
+        mp(permissions.AccessContentsInformation, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
+        mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
-        mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
-        mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
 
         try:
