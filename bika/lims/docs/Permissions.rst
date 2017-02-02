@@ -9,6 +9,7 @@ Each role may contain one or more **permissions**.
 Test Setup
 ==========
 
+    >>> import transaction
     >>> from plone import api as ploneapi
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from Products.PloneTestCase.setup import portal_owner, default_password
@@ -40,6 +41,7 @@ Test Setup
     ...     _ = container.invokeFactory(portal_type, id="tmpID", title=title)
     ...     obj = container.get(_)
     ...     obj.processForm()
+    ...     transaction.commit()  # somehow the created method did not appear until I added this
     ...     return obj
 
     >>> def get_workflows_for(context):
@@ -82,7 +84,6 @@ initially in the `active` state::
     >>> get_workflow_status_of(bika_setup)
     'active'
 
-
 Test Permissions
 ................
 
@@ -94,7 +95,7 @@ Exactly these roles have should have a `View` permission::
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", bika_setup)
-    ['Authenticated']
+    ['Anonymous']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -128,6 +129,79 @@ Anonymous should not be able to view the `bika_bika_setup` folder::
 Anonymous should not be able to edit the `bika_bika_setup` folder::
 
     >>> browser.open(bika_setup.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+
+Laboratory
+----------
+
+The Laboratory object holds all needed information about the lab itself.
+It lives inside the `bika_setup` folder.
+
+Test Workflow
+.............
+
+A `laboratory` lives in the root of a bika installation, or more precisely, the
+portal object::
+
+    >>> laboratory = portal.bika_setup.laboratory
+
+The `laboratory` folder follows the `bika_one_state_workflow` and is
+initially in the `active` state::
+
+    >>> get_workflows_for(laboratory)
+    ('bika_one_state_workflow',)
+
+    >>> get_workflow_status_of(laboratory)
+    'active'
+
+Test Permissions
+................
+
+Exactly these roles have should have a `View` permission::
+
+    >>> get_roles_for_permission("View", laboratory)
+    ['Authenticated']
+
+Exactly these roles have should have the `Access contents information` permission::
+
+    >>> get_roles_for_permission("Access contents information", laboratory)
+    ['Anonymous']
+
+Exactly these roles have should have the `List folder contents` permission::
+
+    >>> get_roles_for_permission("List folder contents", laboratory)
+    ['Authenticated']
+
+Exactly these roles have should have the `Modify portal content` permission::
+
+    >>> get_roles_for_permission("Modify portal content", laboratory)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+
+Exactly these roles have should have the `Delete objects` permission::
+
+    >>> get_roles_for_permission("Delete objects", laboratory)
+    ['Manager']
+
+Anonymous Browser Test
+......................
+
+Ensure we are logged out::
+
+    >>> logout()
+
+Anonymous should not be able to view the `laboratory` folder::
+
+    >>> browser.open(laboratory.absolute_url() + "/base_view")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous should not be able to edit the `laboratory` folder::
+
+    >>> browser.open(laboratory.absolute_url() + "/base_edit")
     Traceback (most recent call last):
     ...
     Unauthorized: ...
@@ -457,6 +531,8 @@ Anonymous should not be able to view the `methods` folder::
 Anonymous should not be able to view a `method`::
 
     >>> browser.open(method.absolute_url() + "/base_view")
+    >>> "method-1" in browser.contents
+    True
 
 Anonymous should not be able to edit the `methods` folder::
 

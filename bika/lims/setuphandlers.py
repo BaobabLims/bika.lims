@@ -281,7 +281,8 @@ class BikaGenerator:
         # We set explicit permissions to access methods to be persistent with the assigned workflow
         mp(permissions.View, ['Authenticated'], 0)
         mp(permissions.ListFolderContents, ['Authenticated'], 0)
-        mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
+        # Front-Page Portlets need to access some information for Anonymous.
+        mp(permissions.AccessContentsInformation, ['Anonymous'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
         mp(ApplyVersionControl, ['Authenticated'], 0)
         mp(SaveNewVersion, ['Authenticated'], 0)
@@ -289,15 +290,19 @@ class BikaGenerator:
         portal.bika_setup.reindexObject()
         # /Bika Setup
 
+        # Laboratory
+        # The `/bika_setup/laboratory` object follows the `bika_one_state_workflow`.
         mp = portal.bika_setup.laboratory.manage_permission
-        mp('Access contents information', ['Authenticated'], 1)
-        mp(permissions.View, ['Authenticated'], 1)
+        # We set explicit permissions to access methods to be persistent with the assigned workflow
+        mp(permissions.View, ['Authenticated'], 0)
+        mp(permissions.ListFolderContents, ['Authenticated'], 0)
+        # Front-Page Portlets need to access some information for Anonymous.
+        mp(permissions.AccessContentsInformation, ['Anonymous'], 0)
         portal.bika_setup.laboratory.reindexObject()
+        # /Laboratory
 
-        # /clients folder permissions
-
+        # Clients
         # When modifying these defaults, look to subscribers/objectmodified.py
-
         # Member role must have view permission on /clients, to see the list.
         # This means within a client, perms granted on Member role are available
         # in clients not our own, allowing sideways entry if we're not careful.
@@ -323,6 +328,7 @@ class BikaGenerator:
                 mp = contact.manage_permission
                 mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
                 mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+        # /Clients
 
         # /worksheets folder permissions
         mp = portal.worksheets.manage_permission
