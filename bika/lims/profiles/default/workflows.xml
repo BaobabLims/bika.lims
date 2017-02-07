@@ -43,6 +43,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="ARPriority">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -51,6 +52,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="AnalysisProfile">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -59,6 +61,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="ARTemplate">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -74,6 +77,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="AnalysisCategory">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -92,6 +96,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="AnalysisService">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -100,6 +105,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="AnalysisSpec">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -111,6 +117,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="AttachmentType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -128,6 +135,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="BatchLabel">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -149,11 +157,13 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Client">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
     <!-- Contacts -->
     <type type_id="Contact">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -162,6 +172,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Container">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -170,6 +181,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="ContainerType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -178,6 +190,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Department">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -196,6 +209,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="IdentifierType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -204,6 +218,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Instrument">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -215,11 +230,13 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="InstrumentMaintenanceTask">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 
     <!-- Instrument Scheduled Tasks -->
     <type type_id="InstrumentScheduledTask">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -228,6 +245,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="InstrumentType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -236,6 +254,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="InstrumentLocation">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -261,6 +280,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="LabContact">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -268,13 +288,14 @@
     <type type_id="Laboratory">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
-    <type type_id="LabProduct">
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Lab Products -->
     <type type_id="LabProducts">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
+    </type>
+    <type type_id="LabProduct">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
     <!-- Manufacturers -->
@@ -282,6 +303,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Manufacturer">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -290,6 +312,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Method">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -306,6 +329,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Supplier">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -326,6 +350,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Preservation">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -334,6 +359,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="Pricelist">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -347,6 +373,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="ReferenceDefinition">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -378,6 +405,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SampleCondition">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -386,6 +414,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SampleMatrix">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -400,6 +429,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SamplePoint">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -408,6 +438,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="StorageLocation">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -416,6 +447,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SampleType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -424,6 +456,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SamplingDeviation">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -432,11 +465,13 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SRTemplate">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
     <!-- Supplier Contacts -->
     <type type_id="SupplierContact">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -453,6 +488,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="WorksheetTemplate">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
@@ -461,6 +497,7 @@
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
     <type type_id="SubGroup">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 

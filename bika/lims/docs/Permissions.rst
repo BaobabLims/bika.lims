@@ -237,7 +237,7 @@ initially in the `active` state::
 A `labcontact` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(labcontact)
-    ('bika_inactive_workflow',)
+    ('bika_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(labcontacts)
     'active'
@@ -346,7 +346,7 @@ initially in the `active` state::
 A `instrument` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(instrument)
-    ('bika_inactive_workflow',)
+    ('bika_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(instruments)
     'active'
@@ -463,7 +463,7 @@ the `active` state::
 A `method` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(method)
-    ('bika_inactive_workflow',)
+    ('bika_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(methods)
     'active'
@@ -579,7 +579,7 @@ initially in the `active` state::
 A `analysisservice` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(analysisservice)
-    ('bika_inactive_workflow',)
+    ('bika_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(analysisservices)
     'active'
