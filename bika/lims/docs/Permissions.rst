@@ -533,6 +533,13 @@ Anonymous should not be able to view the `methods` folder::
     >>> "methods" in browser.contents
     True
 
+Anonymous should not be able to deactivate a method, so there should be no
+**Deactivate** Button in the Listing table::
+
+    >>> browser.open(methods.absolute_url())
+    >>> "deactivate_transition" not in browser.contents
+    True
+
 Anonymous should not be able to view a `method`::
 
     >>> browser.open(method.absolute_url() + "/base_view")

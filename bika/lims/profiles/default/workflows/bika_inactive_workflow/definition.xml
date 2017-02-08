@@ -114,14 +114,14 @@
   <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Activate</action>
     <guard>
-      <guard-permission>Review portal content</guard-permission>
+      <guard-permission>Modify portal content</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Deactivate</action>
     <guard>
-      <guard-permission>Review portal content</guard-permission>
+      <guard-permission>Modify portal content</guard-permission>
     </guard>
   </transition>
 
