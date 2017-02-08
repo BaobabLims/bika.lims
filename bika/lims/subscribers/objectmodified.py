@@ -40,16 +40,16 @@ def ObjectModifiedEventHandler(obj, event):
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
+        mp(permissions.View, ['Manager', 'Member', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+        mp(permissions.AccessContentsInformation, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
 
     elif obj.portal_type == 'Contact':
         # Contacts need to be given "Owner" local-role on their Client.
         mp = obj.manage_permission
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
         mp(ManageLoginDetails, ['Manager', 'LabManager', 'LabClerk'], 0)
         # Verify that the Contact details are the same as the Plone user.

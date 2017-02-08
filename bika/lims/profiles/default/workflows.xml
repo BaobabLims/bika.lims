@@ -154,14 +154,14 @@
 
     <!-- Clients -->
     <type type_id="ClientFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <!-- <bound-workflow workflow_id="bika_one_state_workflow"/> -->
     </type>
     <type type_id="Client">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
-    <!-- Contacts -->
+    <!-- Contacts live in Clients -->
     <type type_id="Contact">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>

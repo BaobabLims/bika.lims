@@ -9,6 +9,9 @@
 """
 import types
 
+from Acquisition import aq_base
+from Acquisition import aq_parent
+
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes import atapi
@@ -222,7 +225,7 @@ class Contact(Person):
         # User is linked to multiple other contacts (fix in Data)
         if isinstance(contact, list):
             raise ValueError("User '{}' is linked to multiple Contacts: '{}'".format(
-                username, ",".join(map(lambda x: x.Title(), contact)))) 
+                username, ",".join(map(lambda x: x.Title(), contact))))
 
         # XXX: Does it make sense to "remember" the UID as a User property?
         tool = user.getTool()
@@ -236,12 +239,24 @@ class Contact(Person):
         uid = self.UID()
         user.setMemberProperties({KEY: uid})
         logger.info("Linked Contact UID {} to User {}".format(
-            user.getProperty(KEY), user.getId()))
+            user.getProperty(KEY), username))
 
         # Set the Username
         self.setUsername(user.getId())
         # Update the Email address from the user
         self.setEmailAddress(user.getProperty("email"))
+
+        # fix local owner role
+        if self.aq_parent.portal_type == 'Client':
+            self.aq_parent.manage_setLocalRoles(username, ['Owner', ])
+            if hasattr(aq_base(aq_parent(self)), 'reindexObjectSecurity'):
+                self.aq_parent.reindexObjectSecurity()
+
+            # add user to Clients group
+            portal_groups = api.portal.get_tool("portal_groups")
+            group = portal_groups.getGroupById('Clients')
+            group.addMember(username)
+
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
@@ -259,6 +274,7 @@ class Contact(Person):
             return False
 
         user = self.getUser()
+        username = user.getId()
 
         # Unset the UID from the User Property
         user.setMemberProperties({KEY: ""})
@@ -267,6 +283,17 @@ class Contact(Person):
         self.setUsername(None)
         # Unset the Email
         self.setEmailAddress(None)
+
+        # fix local owner role
+        if self.aq_parent.portal_type == 'Client':
+            self.aq_parent.manage_delLocalRoles(username)
+            if hasattr(aq_base(aq_parent(self)), 'reindexObjectSecurity'):
+                self.aq_parent.reindexObjectSecurity()
+
+        # add user to Clients group
+        portal_groups = api.portal.get_tool("portal_groups")
+        group = portal_groups.getGroupById('Clients')
+        group.removeMember(username)
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()

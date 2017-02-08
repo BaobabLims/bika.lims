@@ -11,8 +11,10 @@ Test Setup
 
     >>> import transaction
     >>> from plone import api as ploneapi
+    >>> from zope.lifecycleevent import modified
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
-    >>> from Products.PloneTestCase.setup import portal_owner, default_password
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
 
     >>> portal = self.getPortal()
     >>> portal_url = portal.absolute_url()
@@ -20,12 +22,17 @@ Test Setup
     >>> bika_setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()
 
-    >>> def login(user=portal_owner, password=default_password):
+    >>> def start_server():
+    ...     from Testing.ZopeTestCase.utils import startZServer
+    ...     ip, port = startZServer()
+    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
+
+    >>> def login(user=TEST_USER_ID, password=TEST_USER_PASSWORD):
     ...     browser.open(portal_url + "/login_form")
     ...     browser.getControl(name='__ac_name').value = user
     ...     browser.getControl(name='__ac_password').value = password
     ...     browser.getControl(name='submit').click()
-    ...     assert("You are now logged in" in browser.contents)
+    ...     assert("__ac_password" not in browser.contents)
 
     >>> def logout():
     ...     browser.open(portal_url + "/logout")
@@ -41,6 +48,7 @@ Test Setup
     ...     _ = container.invokeFactory(portal_type, id="tmpID", title=title)
     ...     obj = container.get(_)
     ...     obj.processForm()
+    ...     modified(obj)  # notify explicitly for the test
     ...     transaction.commit()  # somehow the created method did not appear until I added this
     ...     return obj
 
@@ -319,6 +327,170 @@ Anonymous should not be able to edit a `labcontact`::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+
+Clients and Contacts
+--------------------
+
+Clients are the customers of the lab. A client represents another company, which
+has one or more natural persons as contacts.
+
+Test Workflow
+.............
+
+A `client` lives in the `/clients` folder::
+
+    >>> clients = portal.clients
+    >>> client = create(clients, "Client")
+
+A `contact` lives in a `client`::
+
+    >>> contact = create(client, "Contact")
+
+The `clients` folder follows **no** workflow::
+
+    >>> get_workflows_for(clients)
+    ()
+
+A `client` follows the `bika_one_state_workflow` and the
+`bika_inactive_workflow` and has an initial state of `active`::
+
+    >>> get_workflows_for(client)
+    ('bika_one_state_workflow', 'bika_inactive_workflow')
+
+    >>> get_workflow_status_of(client)
+    'active'
+
+A `contact` follows the `bika_one_state_workflow` and the
+`bika_inactive_workflow` and has an initial state of `active`::
+
+    >>> get_workflows_for(contact)
+    ('bika_one_state_workflow', 'bika_inactive_workflow')
+
+    >>> get_workflow_status_of(contact)
+    'active'
+
+Test Permissions
+................
+
+Exactly these roles have should have a `View` permission::
+
+    >>> get_roles_for_permission("View", clients)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+    >>> get_roles_for_permission("View", client)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+    >>> get_roles_for_permission("View", contact)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+Exactly these roles have should have the `Access contents information` permission::
+
+    >>> get_roles_for_permission("Access contents information", clients)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+    >>> get_roles_for_permission("Access contents information", client)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+    >>> get_roles_for_permission("Access contents information", contact)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+Exactly these roles have should have the `List folder contents` permission::
+
+    >>> get_roles_for_permission("List folder contents", clients)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+    >>> get_roles_for_permission("List folder contents", client)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+    >>> get_roles_for_permission("List folder contents", contact)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+
+Exactly these roles have should have the `Modify portal content` permission::
+
+    >>> get_roles_for_permission("Modify portal content", clients)
+    ['LabClerk', 'LabManager', 'Manager', 'Owner']
+
+    >>> get_roles_for_permission("Modify portal content", client)
+    ['LabManager', 'Manager', 'Owner']
+
+Exactly these roles have should have the `Delete objects` permission::
+
+    >>> get_roles_for_permission("Delete objects", clients)
+    ['LabClerk', 'LabManager', 'Manager', 'Owner']
+
+    >>> get_roles_for_permission("Delete objects", client)
+    ['Manager']
+
+Anonymous Browser Test
+......................
+
+Ensure we are logged out::
+
+    >>> logout()
+
+Anonymous should be able to view the `clients` folder::
+
+    >>> browser.open(clients.absolute_url() + "/base_view")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous should not be able to view a `client`::
+
+    >>> browser.open(client.absolute_url() + "/base_view")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous should not be able to edit the `bika_clients` folder::
+
+    >>> browser.open(clients.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Anonymous should not be able to edit a `client`::
+
+    >>> browser.open(client.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Client Browser Test
+...................
+
+Create a new user for the contact::
+
+    >>> user = ploneapi.user.create(email="contact-1@client-1.com", username="contact-1", password=TEST_USER_PASSWORD, properties=dict(fullname="Test Contact 1"))
+    >>> groups = ploneapi.portal.get_tool("portal_groups")
+    >>> groups.addPrincipalToGroup(user.getId(), "Clients")
+    True
+    >>> contact.setUser(user)
+    True
+    >>> transaction.commit()
+
+Now we log in as the new user::
+
+    >>> login(user.id)
+
+The user should be able to view the `clients` folder::
+
+    >>> browser.open(clients.absolute_url())
+    >>> "client-1" in browser.contents
+    True
+
+The user should be able to modify his/her own properties::
+
+    >>> browser.open(contact.absolute_url() + "/base_edit")
+    >>> "submit" in browser.contents
+    True
+
+Unlinked users from contacts have no more access to the client object::
+
+    >>> contact.unlinkUser()
+    True
+    >>> browser.open(client.absolute_url())
 
 
 Instrument(s)
