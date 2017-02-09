@@ -313,12 +313,14 @@ class BikaGenerator:
         mp(permissions.AccessContentsInformation, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
 
+        # Set modify permissions
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
         portal.clients.reindexObject()
 
+        # Set permissions for each client in the clients folder
         for obj in portal.clients.objectValues():
             mp = obj.manage_permission
 
@@ -327,6 +329,7 @@ class BikaGenerator:
             mp(permissions.AccessContentsInformation, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
             mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
 
+            # Set modify permissions
             mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
             mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
             obj.reindexObject()

@@ -28,7 +28,7 @@ def test_suite():
             ztc.ZopeDocFileSuite(
                 doctestfile,
                 test_class=BikaSimpleTestCase,
-                optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE | doctest.REPORT_NDIFF | doctest.REPORT_ONLY_FIRST_FAILURE,
+                optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE | doctest.REPORT_NDIFF,
             )
     ])
     return suite

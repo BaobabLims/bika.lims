@@ -342,6 +342,7 @@ A `client` lives in the `/clients` folder::
 
     >>> clients = portal.clients
     >>> client = create(clients, "Client")
+    >>> another_client = create(clients, "Client")
 
 A `contact` lives in a `client`::
 
@@ -379,7 +380,7 @@ Exactly these roles have should have a `View` permission::
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Preserver', 'Sampler', 'SamplingCoordinator']
 
     >>> get_roles_for_permission("View", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
 
     >>> get_roles_for_permission("View", contact)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
@@ -457,28 +458,45 @@ Anonymous should not be able to edit a `client`::
     ...
     Unauthorized: ...
 
-Client Browser Test
-...................
+Client Contacts Browser Test
+............................
 
 Create a new user for the contact::
 
     >>> user = ploneapi.user.create(email="contact-1@client-1.com", username="contact-1", password=TEST_USER_PASSWORD, properties=dict(fullname="Test Contact 1"))
-    >>> groups = ploneapi.portal.get_tool("portal_groups")
-    >>> groups.addPrincipalToGroup(user.getId(), "Clients")
-    True
-    >>> contact.setUser(user)
-    True
     >>> transaction.commit()
 
 Now we log in as the new user::
 
     >>> login(user.id)
 
-The user should be able to view the `clients` folder::
+The user can not access the client::
+
+    >>> browser.open(clients.absolute_url())
+    >>> "client-1" not in browser.contents
+    True
+
+    >>> browser.open(client.absolute_url())
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Link the user to a client contact to grant access to the client::
+
+    >>> contact.setUser(user)
+    True
+    >>> transaction.commit()
+
+The user can now see the client in the clients folder::
 
     >>> browser.open(clients.absolute_url())
     >>> "client-1" in browser.contents
     True
+
+The user has now a local owner role on the client::
+
+    >>> sorted(user.getRolesInContext(client))
+    ['Authenticated', 'Member', 'Owner']
 
 The user should be able to modify his/her own properties::
 
@@ -486,11 +504,34 @@ The user should be able to modify his/her own properties::
     >>> "submit" in browser.contents
     True
 
-Unlinked users from contacts have no more access to the client object::
+The user can not access other clients::
+
+    >>> browser.open(another_client.absolute_url())
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Unlink the user to revoke all access to the client::
 
     >>> contact.unlinkUser()
     True
+    >>> transaction.commit()
+
+The user has no local owner role anymore on the client::
+
+    >>> sorted(user.getRolesInContext(client))
+    ['Authenticated', 'Member']
+
+The user can not access the client anymore::
+
+    >>> browser.open(clients.absolute_url())
+    >>> "client-1" not in browser.contents
+    True
+
     >>> browser.open(client.absolute_url())
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
 
 
 Instrument(s)
@@ -650,7 +691,6 @@ Test Permissions
     which got customized in the `setuphandler` explicitly. Therefore, please
     refer to both, the assigned workflow and the setuphandler for the merged set
     of alloed roles for a permission.
-
 
 Exactly these roles have should have a `View` permission::
 

@@ -40,9 +40,12 @@ def ObjectModifiedEventHandler(obj, event):
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission
-        mp(permissions.View, ['Manager', 'Member', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+        # Set view permissions
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
         mp(permissions.AccessContentsInformation, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+
+        # Set modify permissions
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
 
