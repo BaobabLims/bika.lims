@@ -37,6 +37,7 @@ def ObjectModifiedEventHandler(obj, event):
             reference_versions = getattr(target, 'reference_versions', {})
             reference_versions[obj.UID()] = version_id + 1
             target.reference_versions = reference_versions
+        obj.reindexObject()
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission
@@ -49,6 +50,7 @@ def ObjectModifiedEventHandler(obj, event):
         # Set modify permissions
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        obj.reindexObject()
 
     elif obj.portal_type == 'Contact':
         # Contacts need to be given "Owner" local-role on their Client.
@@ -68,6 +70,7 @@ def ObjectModifiedEventHandler(obj, event):
                               'email': contact_email,
                               'fullname': contact_fullname}
                 member.setMemberProperties(properties)
+        obj.reindexObject()
 
     elif obj.portal_type == 'AnalysisCategory':
         for analysis in obj.getBackReferences('AnalysisServiceAnalysisCategory'):
