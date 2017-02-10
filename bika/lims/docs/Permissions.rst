@@ -256,26 +256,26 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", labcontacts)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
     >>> get_roles_for_permission("View", labcontact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", labcontacts)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", labcontact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", labcontacts)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", labcontact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
@@ -377,7 +377,7 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", clients)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Authenticated']
 
     >>> get_roles_for_permission("View", client)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
@@ -388,7 +388,7 @@ Exactly these roles have should have a `View` permission::
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", clients)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", client)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
@@ -399,7 +399,7 @@ Exactly these roles have should have the `Access contents information` permissio
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", clients)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", client)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
@@ -470,7 +470,7 @@ Now we log in as the new user::
 
     >>> login(user.id)
 
-The user can not access the client::
+The user can not access the clients folder yet::
 
     >>> browser.open(clients.absolute_url())
     >>> "client-1" not in browser.contents
@@ -481,35 +481,67 @@ The user can not access the client::
     ...
     Unauthorized: ...
 
-Link the user to a client contact to grant access to the client::
+Link the user to a client contact to grant access to this client::
 
     >>> contact.setUser(user)
     True
     >>> transaction.commit()
 
-The user can now see the client in the clients folder::
+Linking a user adds this user to the `Clients` group::
+
+    >>> clients_group = ploneapi.group.get("Clients")
+    >>> user in clients_group.getAllGroupMembers()
+    True
+
+This gives the user the global `Client` role::
+
+    >>> sorted(ploneapi.user.get_roles(user=user))
+    ['Authenticated', 'Client', 'Member']
+
+It also grants local `Owner` role on the client object::
+
+    >>> sorted(user.getRolesInContext(client))
+    ['Authenticated', 'Member', 'Owner']
+
+This allows the user to see the client in the clients folder::
 
     >>> browser.open(clients.absolute_url())
     >>> "client-1" in browser.contents
     True
 
-The user has now a local owner role on the client::
+The user is able to modify the client properties::
 
-    >>> sorted(user.getRolesInContext(client))
-    ['Authenticated', 'Member', 'Owner']
-
-The user should be able to modify his/her own properties::
-
-    >>> browser.open(contact.absolute_url() + "/base_edit")
-    >>> "submit" in browser.contents
+    >>> browser.open(client.absolute_url() + "/base_edit")
+    >>> "edit_form" in browser.contents
     True
 
-The user can not access other clients::
+As well as the own contact properties::
+
+    >>> browser.open(contact.absolute_url() + "/base_edit")
+    >>> "edit_form" in browser.contents
+    True
+
+But the user can not access other clients::
 
     >>> browser.open(another_client.absolute_url())
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+Or modify other clients::
+
+    >>> browser.open(another_client.absolute_url() + "/base_edit")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+To create a new Analysis Request, the user needs to access the information from
+the `bika_setup` object, like e.g. `bika_sampletype`::
+
+    >>> sampletype = create(bika_setup.bika_sampletypes, "SampleType", title="Sample 1")
+    >>> browser.open(bika_setup_url + "/bika_sampletypes/base_view")
+    >>> "sampletype-1" in browser.contents
+    True
 
 Unlink the user to revoke all access to the client::
 
@@ -570,26 +602,26 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
     >>> get_roles_for_permission("View", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
