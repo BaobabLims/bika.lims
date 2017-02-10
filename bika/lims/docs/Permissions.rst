@@ -391,10 +391,10 @@ Exactly these roles have should have the `Access contents information` permissio
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
 
     >>> get_roles_for_permission("Access contents information", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
 
     >>> get_roles_for_permission("Access contents information", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
 
 Exactly these roles have should have the `List folder contents` permission::
 

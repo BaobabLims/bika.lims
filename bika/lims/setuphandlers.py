@@ -324,10 +324,10 @@ class BikaGenerator:
         for obj in portal.clients.objectValues():
             mp = obj.manage_permission
 
-            # Set View, Access and List Permissions for all Client objects in the Clients folder
-            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-            mp(permissions.AccessContentsInformation, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
-            mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+            # Set view permissions (need to by in sync with those in subscribers.objectmodified.py)
+            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+            mp(permissions.AccessContentsInformation, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+            mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
 
             # Set modify permissions
             mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
