@@ -595,7 +595,7 @@ class BikaListingView(BrowserView):
         self.Or = []
         # logger.info("contentFilter: %s"%self.contentFilter)
         for k, v in self.columns.items():
-            if 'index 'not in v \
+            if 'index' not in v \
                or v['index'] == 'review_state' \
                or v['index'] in self.filter_indexes:
                 continue
