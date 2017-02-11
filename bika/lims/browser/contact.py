@@ -93,22 +93,27 @@ class ContactLoginDetailsView(BrowserView):
     def linkable_users(self):
         """Search Plone users which are not linked to a contact
         """
-        users = api.user.get_users()
+        acl_users = api.portal.get_tool("acl_users")
+        users = acl_users.searchUsers()
 
         out = []
         for user in users:
-            userid = user.getId()
+            userid = user.get("id", None)
+
+            if userid is None:
+                continue
 
             # Skip users which are already linked to a Contact
             contact = Contact.getContactByUsername(userid)
             labcontact = LabContact.getContactByUsername(userid)
+
             if contact or labcontact:
                 continue
 
             userdata = {
-                "userid": user.getId(),
-                "email": user.getProperty("email"),
-                "fullname": user.getProperty("fullname"),
+                "userid": userid,
+                "email": user.get("email"),
+                "fullname": user.get("title"),
             }
 
             # filter out users which do not match the searchstring
@@ -116,6 +121,9 @@ class ContactLoginDetailsView(BrowserView):
                 s = self.searchstring.lower()
                 if not any(map(lambda v: re.search(s, v.lower()), userdata.values())):
                     continue
+
+            # update data (maybe for later use)
+            userdata.update(user)
 
             # Append the userdata for the results
             out.append(userdata)
