@@ -7,12 +7,12 @@
 
 import re
 
-from Acquisition import aq_base
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from plone import api
 from plone.protect import CheckAuthenticator
+from plone.app.controlpanel.usergroups import UsersOverviewControlPanel
 
 from bika.lims import PMF
 from bika.lims import logger
@@ -93,8 +93,12 @@ class ContactLoginDetailsView(BrowserView):
     def linkable_users(self):
         """Search Plone users which are not linked to a contact
         """
-        acl_users = api.portal.get_tool("acl_users")
-        users = acl_users.searchUsers()
+
+        # We make use of the existing controlpanel `@@usergroup-userprefs` view
+        # logic to make sure we get all users from all plugins (e.g. LDAP)
+        users_view = UsersOverviewControlPanel(self.context, self.request)
+
+        users = users_view.doSearch("")
 
         out = []
         for user in users:
