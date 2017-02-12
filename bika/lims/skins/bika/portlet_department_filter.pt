@@ -18,9 +18,10 @@
                       deps python: here.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending', inactive_state='active') if user_name=='admin' else lab_contact[0].getObject().getSortedDepartments();
                       cookie python:request.cookies.get('filter_by_department_info','');
                       deps_from_cookie python: cookie.split(',') if cookie and len(deps)>0 else [];
-                      first_from_cat python: deps[0].UID if user_name=='admin' else deps[0].UID();
+                      first_from_cat python: deps and deps[0].UID or '' if user_name=='admin' else deps and deps[0].UID() or '';
                       first_dep python: deps_from_cookie[0] if len(deps_from_cookie)>1 else first_from_cat if not cookie else '';">
 
+        <tal:condition condition="deps">
         <dl class="portlet" id="portletfilter_by_department">
 
           <!-- The header of the porlet -->
@@ -67,6 +68,8 @@
 
           </form>
         </dl>
+        </tal:condition>
+
       </tal:departments>
 
     </div>
