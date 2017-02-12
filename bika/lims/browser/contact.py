@@ -180,11 +180,12 @@ class ContactLoginDetailsView(BrowserView):
     def _create_user(self):
         """Create a new user
         """
+
         def error(field, message):
             if field:
                 message = "%s: %s" % (field, message)
             self.context.plone_utils.addPortalMessage(message, 'error')
-            return self.template()
+            return self.request.response.redirect(self.context.absolute_url() + "/login_details")
 
         form = self.request.form
         contact = self.context
@@ -230,17 +231,6 @@ class ContactLoginDetailsView(BrowserView):
 
         contact.setUser(username)
 
-        # If we're being created in a Client context, then give
-        # the contact an Owner local role on client.
-        if contact.aq_parent.portal_type == 'Client':
-            contact.aq_parent.manage_setLocalRoles(username, ['Owner', ])
-            if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
-                contact.aq_parent.reindexObjectSecurity()
-
-            # add user to Clients group
-            group = self.context.portal_groups.getGroupById('Clients')
-            group.addMember(username)
-
         # Additional groups for LabContact users.
         # not required (not available for client Contact)
         if 'groups' in self.request and self.request['groups']:
@@ -259,12 +249,12 @@ class ContactLoginDetailsView(BrowserView):
             except:
                 import transaction
                 transaction.abort()
-                return error(
-                    None, PMF("SMTP server disconnected."))
+                message = _("SMTP server disconnected. User creation aborted.")
+                return error(None, message)
 
-        message = PMF("Member registered.")
+        message = _("Member registered and linked to the current Contact.")
         self.context.plone_utils.addPortalMessage(message, 'info')
-        return self.template()
+        return self.request.response.redirect(self.context.absolute_url() + "/login_details")
 
     def tabindex(self):
         i = 0
