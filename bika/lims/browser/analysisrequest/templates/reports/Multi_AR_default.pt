@@ -154,7 +154,8 @@
                           contact         python:analysisrequest['contact']['obj'];
                           lab             python:portal['obj'].bika_setup.laboratory;
                           showqcanalyses  python:view.isQCAnalysesVisible();
-                          remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+                          remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();
+                          acc_logo        python:lab.getAccreditationBodyLogo();">
 
       <!-- This element will be displayed on each page within the top margin area. -->
       <div id="section-header" class="page-header">
@@ -167,7 +168,7 @@
                 </a>
               </td>
               <td>
-                <img tal:attributes="src python:lab.getAccreditationBodyLogo().absolute_url()"/>
+                <img tal:condition="acc_logo" tal:attributes="src acc_logo.absolute_url()" />
               </td>
             </tr>
           </table>
