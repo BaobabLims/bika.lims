@@ -162,7 +162,7 @@ class InstrumentCalibration(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-    _at_rename_after_creation = False
+    _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
