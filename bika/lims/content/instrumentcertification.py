@@ -205,4 +205,15 @@ class InstrumentCertification(BaseFolder):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
 
-atapi.registerType(InstrumentCertification, PROJECTNAME)
+    def isValid(self):
+        """Returns if the current certificate is in a valid date range
+        """
+
+        today = DateTime()
+        valid_from = self.getValidFrom()
+        valid_to = self.getValidTo()
+
+        return valid_from <= today <= valid_to
+
+
+registerType(InstrumentCertification, PROJECTNAME)
