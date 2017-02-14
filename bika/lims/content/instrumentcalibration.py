@@ -1,22 +1,44 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
+
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import registerType
+
+from plone import api as ploneapi
+
+# Schema and Fields
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import TextField
+
+# Widgets
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextAreaWidget
+
+# bika.lims imports
 from bika.lims.config import PROJECTNAME
+from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import ReferenceWidget
+
 
 schema = BikaSchema.copy() + Schema((
 
-    ReferenceField('Instrument',
+    ReferenceField(
+        'Instrument',
         allowed_types=('Instrument',),
         relationship='InstrumentCalibrationInstrument',
         widget=StringWidget(
@@ -24,68 +46,76 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ComputedField('InstrumentUID',
-        expression = 'context.getInstrument() and context.getInstrument().UID() or None',
+    ComputedField(
+        'InstrumentUID',
+        expression='context.getInstrument() and context.getInstrument().UID() or None',
         widget=ComputedWidget(
             visible=False,
         ),
     ),
 
-    DateTimeField('DateIssued',
-        with_time = 1,
-        with_date = 1,
-        widget = DateTimeWidget(
+    DateTimeField(
+        'DateIssued',
+        with_time=1,
+        with_date=1,
+        widget=DateTimeWidget(
             label=_("Report Date"),
             description=_("Calibration report date"),
         ),
     ),
 
-    DateTimeField('DownFrom',
-        with_time = 1,
-        with_date = 1,
-        widget = DateTimeWidget(
+    DateTimeField(
+        'DownFrom',
+        with_time=1,
+        with_date=1,
+        widget=DateTimeWidget(
             label=_("From"),
             description=_("Date from which the instrument is under calibration"),
         ),
     ),
 
-    DateTimeField('DownTo',
-        with_time = 1,
-        with_date = 1,
-        widget = DateTimeWidget(
+    DateTimeField(
+        'DownTo',
+        with_time=1,
+        with_date=1,
+        widget=DateTimeWidget(
             label=_("To"),
             description=_("Date until the instrument will not be available"),
         ),
     ),
 
-    StringField('Calibrator',
-        widget = StringWidget(
+    StringField(
+        'Calibrator',
+        widget=StringWidget(
             label=_("Calibrator"),
             description=_("The analyst or agent responsible of the calibration"),
         )
     ),
 
-    TextField('Considerations',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+    TextField(
+        'Considerations',
+        default_content_type='text/plain',
+        allowed_content_types=('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
+        widget=TextAreaWidget(
             label=_("Considerations"),
             description=_("Remarks to take into account before calibration"),
         ),
     ),
 
-    TextField('WorkPerformed',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+    TextField(
+        'WorkPerformed',
+        default_content_type='text/plain',
+        allowed_content_types=('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
+        widget=TextAreaWidget(
             label=_("Work Performed"),
             description=_("Description of the actions made during the calibration"),
         ),
     ),
 
-    ReferenceField('Worker',
+    ReferenceField(
+        'Worker',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
         relationship='LabContactInstrumentCalibration',
@@ -96,46 +126,50 @@ schema = BikaSchema.copy() + Schema((
             size=30,
             base_query={'inactive_state': 'active'},
             showOn=True,
-            colModel=[{'columnName': 'UID', 'hidden': True},
-                      {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
-                      {'columnName': 'Title', 'width': '80', 'label': _('Name')}
-                     ],
+            colModel=[
+                {'columnName': 'UID', 'hidden': True},
+                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
+                {'columnName': 'Title', 'width': '80', 'label': _('Name')}
+            ],
         ),
     ),
 
-    StringField('ReportID',
-        widget = StringWidget(
+    StringField(
+        'ReportID',
+        widget=StringWidget(
             label=_("Report ID"),
             description=_("Report identification number"),
         )
     ),
 
-    TextField('Remarks',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+    TextField(
+        'Remarks',
+        default_content_type='text/plain',
+        allowed_content_types=('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
+        widget=TextAreaWidget(
             label=_("Remarks"),
         ),
     ),
-
 ))
 
 schema['title'].widget.label = 'Task ID'
 
 
 class InstrumentCalibration(BaseFolder):
+    """Manages the instrument calibration cycle
+    """
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-
     _at_rename_after_creation = False
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def getLabContacts(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = ploneapi.portal.get_tool(self, 'bika_setup_catalog')
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',
@@ -144,4 +178,5 @@ class InstrumentCalibration(BaseFolder):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
 
-atapi.registerType(InstrumentCalibration, PROJECTNAME)
+
+registerType(InstrumentCalibration, PROJECTNAME)
