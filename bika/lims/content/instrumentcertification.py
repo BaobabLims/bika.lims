@@ -5,6 +5,8 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import math
+
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 
@@ -214,6 +216,33 @@ class InstrumentCertification(BaseFolder):
         valid_to = self.getValidTo()
 
         return valid_from <= today <= valid_to
+
+    def getDaysToExpire(self):
+        """Returns the days until this certificate expires
+
+        :returns: Days until the certificate expires
+        :rtype: int
+        """
+
+        # invalid certificates are already expired
+        if not self.isValid():
+            return 0
+
+        today = DateTime()
+        valid_to = self.getValidTo()
+
+        delta = valid_to - today
+        return int(math.ceil(delta))
+
+    def getWeeksToExpire(self):
+        """Returns the number weeks until this certificate expires
+
+        :returns: Weeks until the certificate expires
+        :rtype: float
+        """
+
+        days = self.getDaysToExpire()
+        return days / 7
 
 
 registerType(InstrumentCertification, PROJECTNAME)
