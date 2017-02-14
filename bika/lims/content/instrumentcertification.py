@@ -234,15 +234,15 @@ class InstrumentCertification(BaseFolder):
         delta = valid_to - today
         return int(math.ceil(delta))
 
-    def getWeeksToExpire(self):
-        """Returns the number weeks until this certificate expires
+    def getWeeksAndDaysToExpire(self):
+        """Returns the number weeks and days until this certificate expires
 
-        :returns: Weeks until the certificate expires
-        :rtype: float
+        :returns: Weeks and days until the certificate expires
+        :rtype: tuple(weeks, days)
         """
 
         days = self.getDaysToExpire()
-        return days / 7
+        return divmod(days, 7)
 
 
 registerType(InstrumentCertification, PROJECTNAME)
