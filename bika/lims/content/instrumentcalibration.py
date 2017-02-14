@@ -5,6 +5,8 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import math
+
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 
@@ -187,6 +189,19 @@ class InstrumentCalibration(BaseFolder):
         down_to = self.getDownTo()
 
         return down_from <= today <= down_to
+
+    def getRemainingDaysInCalibration(self):
+        """Returns the days until the instrument returns from calibration
+        """
+
+        if not self.isCalibrationInProgress():
+            return 0
+
+        today = DateTime()
+        down_to = self.getDownTo()
+
+        delta = down_to - today
+        return int(math.ceil(delta))
 
 
 registerType(InstrumentCalibration, PROJECTNAME)

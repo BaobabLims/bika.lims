@@ -503,7 +503,7 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is under calibration progress
         """
         calibration = self.getLatestValidCalibration()
-        if calibration:
+        if calibration is not None:
             return calibration.isCalibrationInProgress()
         return False
 
@@ -571,23 +571,21 @@ class Instrument(ATFolder):
         """ Returns the latest valid calibration. If no latest valid
             calibration found, returns None
         """
-        calibration = None
-        lastfrom = None
-        lastto = None
-        for c in self.getCalibrations():
-            validfrom = c.getDownFrom() if c else None
-            validto = c.getDownTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validfrom = validfrom.asdatetime().date()
-            validto = validto.asdatetime().date()
-            if not calibration \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
-                calibration = c
-                lastfrom = validfrom
-                lastto = validto
-        return calibration
+        # 1. get all calibrations
+        calibrations = self.getCalibrations()
+
+        # 2. filter out calibrations which are not in progress
+        active_calibrations = filter(lambda x: x.isCalibrationInProgress(), calibrations)
+
+        # 3. sort by the remaining days in calibration, e.g. [10, 7, 6, 1]
+        sort_func = lambda x, y: cmp(x.getRemainingDaysInCalibration(),
+                                     y.getRemainingDaysInCalibration())
+        sorted_calibrations = sorted(active_calibrations, cmp=sort_func, reverse=True)
+
+        # 4. return the calibration with the most remaining days
+        if len(sorted_calibrations) > 0:
+            return sorted_calibrations[0]
+        return None
 
     def getValidations(self):
         """
