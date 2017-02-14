@@ -5,7 +5,7 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-
+from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes.atapi import BaseFolder
@@ -177,6 +177,16 @@ class InstrumentCalibration(BaseFolder):
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
+
+    def isCalibrationInProgress(self):
+        """Returns if the current certificate is out-of-date
+        """
+
+        today = DateTime()
+        down_from = self.getDownFrom()
+        down_to = self.getDownTo()
+
+        return down_from <= today <= down_to
 
 
 registerType(InstrumentCalibration, PROJECTNAME)

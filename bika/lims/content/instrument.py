@@ -506,12 +506,8 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is under calibration progress
         """
         calibration = self.getLatestValidCalibration()
-        today = date.today()
-        if calibration and calibration.getDownTo():
-            validfrom = calibration.getDownFrom().asdatetime().date()
-            validto = calibration.getDownTo().asdatetime().date()
-            if validfrom <= today <= validto:
-                return True
+        if calibration:
+            return calibration.isCalibrationInProgress()
         return False
 
     def getCertificateExpireDate(self):
