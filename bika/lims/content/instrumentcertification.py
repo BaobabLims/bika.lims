@@ -224,14 +224,21 @@ class InstrumentCertification(BaseFolder):
         :rtype: int
         """
 
-        # invalid certificates are already expired
-        if not self.isValid():
-            return 0
-
+        delta = 0
         today = DateTime()
+        valid_from = self.getValidFrom()
         valid_to = self.getValidTo()
 
-        delta = valid_to - today
+        # one of the fields is not set, return 0 days
+        if not valid_from or not valid_to:
+            return 0
+        # valid_from comes after valid_to?
+        if valid_from > valid_to:
+            return 0
+        # calculate the time between today and valid_to, even if valid_from is in the future.
+        else:
+            delta = valid_to - today
+
         return int(math.ceil(delta))
 
     def getWeeksAndDaysToExpire(self):

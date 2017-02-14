@@ -194,13 +194,21 @@ class InstrumentCalibration(BaseFolder):
         """Returns the days until the instrument returns from calibration
         """
 
-        if not self.isCalibrationInProgress():
-            return 0
-
+        delta = 0
         today = DateTime()
+        down_from = self.getDownFrom()
         down_to = self.getDownTo()
 
-        delta = down_to - today
+        # one of the fields is not set, return 0 days
+        if not down_from or not down_to:
+            return 0
+        # down_from comes after down_to?
+        if down_from > down_to:
+            return 0
+        # calculate the time between today and down_to, even if down_from is in the future.
+        else:
+            delta = down_to - today
+
         return int(math.ceil(delta))
 
 
