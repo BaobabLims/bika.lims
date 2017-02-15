@@ -184,9 +184,8 @@ class InstrumentCalibration(BaseFolder):
         return DisplayList(pairs)
 
     def isCalibrationInProgress(self):
-        """Returns if the current certificate is out-of-date
+        """Checks if the current date is between a calibration period.
         """
-
         today = DateTime()
         down_from = self.getDownFrom()
         down_to = self.getDownTo()
@@ -196,7 +195,6 @@ class InstrumentCalibration(BaseFolder):
     def getRemainingDaysInCalibration(self):
         """Returns the days until the instrument returns from calibration
         """
-
         delta = 0
         today = DateTime()
         down_from = self.getDownFrom()
