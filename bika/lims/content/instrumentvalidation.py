@@ -5,6 +5,9 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import math
+
+from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes.atapi import BaseFolder
@@ -159,6 +162,35 @@ class InstrumentValidation(BaseFolder):
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
+
+    def isValidationInProgress(self):
+        """Checks if the date is beteween a validation period
+        """
+        today = DateTime()
+        down_from = self.getDownFrom()
+        down_to = self.getDownTo()
+
+        return down_from <= today <= down_to
+
+    def getRemainingDaysInValidation(self):
+        """Returns the days until the instrument returns from validation
+        """
+        delta = 0
+        today = DateTime()
+        down_from = self.getDownFrom()
+        down_to = self.getDownTo()
+
+        # one of the fields is not set, return 0 days
+        if not down_from or not down_to:
+            return 0
+        # down_from comes after down_to?
+        if down_from > down_to:
+            return 0
+        # calculate the time between today and down_to, even if down_from is in the future.
+        else:
+            delta = down_to - today
+
+        return int(math.ceil(delta))
 
 
 registerType(InstrumentValidation, PROJECTNAME)
