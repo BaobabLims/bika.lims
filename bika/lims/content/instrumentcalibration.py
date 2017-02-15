@@ -15,6 +15,7 @@ from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import registerType
 
 from plone import api as ploneapi
+from zope.interface import implements
 
 # Schema and Fields
 from Products.Archetypes.atapi import Schema
@@ -35,6 +36,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.interfaces import IInstrumentCalibration
 
 
 schema = BikaSchema.copy() + Schema((
@@ -161,6 +163,7 @@ schema['title'].widget.label = 'Task ID'
 class InstrumentCalibration(BaseFolder):
     """Manages the instrument calibration cycle
     """
+    implements(IInstrumentCalibration)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
