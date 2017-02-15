@@ -16,6 +16,8 @@ from bika.lims.tests.base import BikaSimpleTestCase
 
 DOCTESTS = [
     "../docs/Permissions.rst",
+    "../docs/InstrumentCalibrationCertificationAndValidation.rst",
+    "../docs/ContactUser.rst",
     "../docs/Instruments.rst",
     "../docs/Versioning.rst",
 ]
