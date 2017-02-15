@@ -171,7 +171,7 @@ class InstrumentCalibration(BaseFolder):
         renameAfterCreation(self)
 
     def getLabContacts(self):
-        bsc = ploneapi.portal.get_tool(self, 'bika_setup_catalog')
+        bsc = ploneapi.portal.get_tool('bika_setup_catalog')
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',
