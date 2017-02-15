@@ -26,17 +26,29 @@ class InvoiceBatchInvoicesView(BikaListingView):
         request.set('disable_border', 1)
         self.context_actions = {}
         self.columns = {
-            'id': {'title': _('Invoice Number'), 'toggle': True},
-            'client': {'title': _('Client'), 'toggle': True},
-            'email': {'title': _('Email Address'), 'toggle': False},
-            'phone': {'title': _('Phone'), 'toggle': False},
-            'invoicedate': {'title': _('Invoice Date'), 'toggle': True},
-            'startdate': {'title': _('Start Date'), 'toggle': False},
-            'enddate': {'title': _('End Date'), 'toggle': False},
-            'subtotal': {'title': _('Subtotal'), 'toggle': False},
-            'vatamount': {'title': _('VAT'), 'toggle': False},
-            'total': {'title': _('Total'), 'toggle': True},
-        }
+            'id': {'title': _('Invoice Number'),
+                'toggle': True },
+            'Created': {'title': _('Created'),
+                'toggle': True },
+            'client': {'title': _('Client'),
+                'toggle': True},
+            'email': {'title': _('Email Address'),
+                'toggle': False},
+            'phone': {'title': _('Phone'),
+                'toggle': False},
+            'invoicedate': {'title': _('Invoice Date'),
+                'toggle': True},
+            'startdate': {'title': _('Start Date'),
+                'toggle': False},
+            'enddate': {'title': _('End Date'),
+                'toggle': False},
+            'subtotal': {'title': _('Subtotal'),
+                'toggle': False},
+            'vatamount': {'title': _('VAT'),
+                'toggle': False},
+            'total': {'title': _('Total'),
+                'toggle': True},
+            }
         self.review_states = [
             {
                 'id': 'default',
@@ -45,6 +57,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 'transitions': [],
                 'columns': [
                     'id',
+                    'Created',
                     'client',
                     'email',
                     'phone',
@@ -85,7 +98,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 item['client'] = ''
                 item['email'] = ''
                 item['phone'] = ''
-
+            item['Created'] = self.ulocalized_time(obj.created())
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
             item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
             item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
