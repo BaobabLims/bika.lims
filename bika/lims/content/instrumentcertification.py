@@ -38,6 +38,7 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import ComboBoxWidget
 
 # bika.lims imports
+from bika.lims import logger
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
@@ -216,25 +217,23 @@ class InstrumentCertification(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declareProtected("Modify portal content", "setExpirationInterval")
-    def setExpirationInterval(self, value):
+    security.declareProtected("Modify portal content", "setValidTo")
+    def setValidTo(self, value):
         """Custom setter method to calculate a `ValidTo` date based on
         the `ValidFrom` and `ExpirationInterval` field values.
         """
 
-        # Check if we have a valid value
-        if value:
-            # raises a ValueError if not value.isdigit()
-            value = int(value)
-
         valid_from = self.getValidFrom()
-        if valid_from and value:
-            valid_to = valid_from + value
-            # set the value of the `ValidTo` field
-            self.getField("ValidTo").set(self, valid_to)
+        valid_to = DateTime(value)
+        interval = self.getExpirationInterval()
 
-        # set the value
-        self.getField("ExpirationInterval").set(self, value)
+        if valid_from and interval:
+            valid_to = valid_from + int(interval)
+            self.getField("ValidTo").set(self, valid_to)
+            logger.debug("Set ValidTo Date to: %r" % valid_to)
+        else:
+            # just set the value
+            self.getField("ValidTo").set(self, valid_to)
 
     def getLabContacts(self):
         bsc = ploneapi.portal.get_tool('bika_setup_catalog')
