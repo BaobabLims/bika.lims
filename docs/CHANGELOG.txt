@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2562: Add Client filter when applying Worksheet Template
 LIMS-2561: Valid Reference Samples not being listed in worksheet views
 LIMS-1504: Calculation formula test widgets
 LIMS-2352: Cleaner and smaller instrument import log
