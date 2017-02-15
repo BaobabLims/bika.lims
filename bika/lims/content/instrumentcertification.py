@@ -35,6 +35,7 @@ from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import BooleanWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import ComboBoxWidget
 
 # bika.lims imports
 from bika.lims.config import PROJECTNAME
@@ -95,6 +96,22 @@ schema = BikaSchema.copy() + Schema((
             label=_("Date"),
             description=_("Date when the calibration certificate was granted"),
         ),
+    ),
+
+    StringField(
+        'ExpirationInterval',
+        vocabulary="getInterval",
+        widget=ComboBoxWidget(
+            label=_("Interval"),
+            description=_("The interval is calculated from the 'From' field "
+                          "and defines when the certificate expires in days. "
+                          "Setting this inverval overwrites the 'To' field "
+                          "on save."),
+            default="",
+            # configures the HTML input attributes for the additional field
+            field_config={"type": "number", "step": "1", "max": "99999"},
+            field_regex="\d+"
+        )
     ),
 
     DateTimeField(
@@ -197,6 +214,26 @@ class InstrumentCertification(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    security.declareProtected("Modify portal content", "setExpirationInterval")
+    def setExpirationInterval(self, value):
+        """Custom setter method to calculate a `ValidTo` date based on
+        the `ValidFrom` and `ExpirationInterval` field values.
+        """
+
+        # Check if we have a valid value
+        if value:
+            # raises a ValueError if not value.isdigit()
+            value = int(value)
+
+        valid_from = self.getValidFrom()
+        if valid_from and value:
+            valid_to = valid_from + value
+            # set the value of the `ValidTo` field
+            self.getField("ValidTo").set(self, valid_to)
+
+        # set the value
+        self.getField("ExpirationInterval").set(self, value)
+
     def getLabContacts(self):
         bsc = ploneapi.portal.get_tool(self, 'bika_setup_catalog')
         # fallback - all Lab Contacts
@@ -206,6 +243,21 @@ class InstrumentCertification(BaseFolder):
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
+
+    def getInterval(self):
+        """Vocabulary of date intervals to calculate the "To" field date based
+        from the "From" field date.
+        """
+        items = (
+            ("", _(u"Not set")),
+            ("1", _(u"daily")),
+            ("7", _(u"weekly")),
+            ("30", _(u"monthly")),
+            ("90", _(u"quarterly")),
+            ("180", _(u"biannually")),
+            ("365", _(u"yearly")),
+        )
+        return DisplayList(items)
 
     def isValid(self):
         """Returns if the current certificate is in a valid date range
