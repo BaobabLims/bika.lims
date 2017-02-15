@@ -33,6 +33,7 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
         for instrument_name in instrument_names:
             instrument = self.portal.bika_setup.bika_instruments[instrument_name]
             today = date.today()
+            tomorrow = date.today() + timedelta(1)
             # Getting last valid validation
             lastval = instrument.getLatestValidValidation()
             if not lastval:
@@ -41,7 +42,7 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
                 cal_obj.edit(
                     title='test',
                     DownFrom=today.strftime("%Y/%m/%d"),
-                    DownTo=today.strftime("%Y/%m/%d"),
+                    DownTo=tomorrow.strftime("%Y/%m/%d"),
                     Instrument=instrument
                 )
                 cal_obj.unmarkCreationFlag()
