@@ -204,6 +204,8 @@ schema['title'].widget.label = _("Certificate Code")
 
 
 class InstrumentCertification(BaseFolder):
+    """Issued certification from an instrument calibration
+    """
     implements(IInstrumentCertification)
     security = ClassSecurityInfo()
     schema = schema
