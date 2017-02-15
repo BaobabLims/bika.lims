@@ -54,14 +54,6 @@ class InvoiceBatch(BaseFolder):
     def invoices(self):
         return self.objectValues('Invoice')
 
-    # security.declareProtected(PostInvoiceBatch, 'post')
-    # def post(self, REQUEST = None):
-    #     """ Post invoices
-    #     """
-    #     map (lambda e: e._post(), self.invoices())
-    #     if REQUEST:
-    #         REQUEST.RESPONSE.redirect('invoicebatch_invoices')
-
     security.declareProtected(ManageInvoices, 'createInvoice')
 
     def createInvoice(self, client_uid, items):
@@ -70,7 +62,6 @@ class InvoiceBatch(BaseFolder):
         plone_view = self.restrictedTraverse('@@plone')
         invoice_id = self.generateUniqueId('Invoice')
         invoice = _createObjectByType("Invoice", self, invoice_id)
-        # noinspection PyCallingNonCallable
         invoice.edit(
             Client=client_uid,
             InvoiceDate=DateTime(),
