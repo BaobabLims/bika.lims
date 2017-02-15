@@ -1,6 +1,6 @@
 3.2.1 (unreleased)
 ------------------
-
+LIMS-1504: Calculation formula test widgets
 LIMS-2352: Cleaner and smaller instrument import log
 LIMS-2527: Bika Listing Table fail on invalid `sort_on` index
 LIMS-2568: Multi AR Report Template raises AttributeError
