@@ -11,7 +11,7 @@ from AccessControl import ClassSecurityInfo
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import DisplayList, PicklistWidget
 from Products.Archetypes.atapi import registerType
 
 from zope.interface import implements
@@ -49,10 +49,10 @@ from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IInstrument
 from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
-
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -120,13 +120,25 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
+            visible=False,
         ),
     ),
 
-    BooleanField(
-        'DisposeUntilNextCalibrationTest',
-        default=False,
-        widget=BooleanWidget(
+    ReferenceField('Methods',
+        vocabulary='_getAvailableMethods',
+        allowed_types=('Method',),
+        relationship='InstrumentMethods',
+        required=0,
+        multiValued=1,
+        widget=PicklistWidget(
+            size=10,
+            label=_("Methods"),
+        ),
+    ),
+
+    BooleanField('DisposeUntilNextCalibrationTest',
+        default = False,
+        widget = BooleanWidget(
             label=_("De-activate until next calibration test"),
             description=_("If checked, the instrument will be unavailable until the next valid "
                           "calibration was performed. This checkbox will automatically be unchecked."),
@@ -391,6 +403,15 @@ class Instrument(ATFolder):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
+    @deprecated(comment="bika.lims.content.instrument.getMethodUID is \
+                deprecated and will be removed in Bika LIMS 3.3")
+
+    def getMethodUIDs(self):
+        uids = []
+        if self.getMethods():
+            uids = [m.UID() for m in self.getMethods()]
+        return uids
+
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.getName)
@@ -409,7 +430,6 @@ class Instrument(ATFolder):
                  for c in bsc(portal_type='Method',
                               inactive_state='active')]
         items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
     def getInstrumentTypes(self):
