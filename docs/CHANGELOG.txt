@@ -2,6 +2,7 @@
 ------------------
 
 Issue-1971: Allow Reports in Landscape
+Issue-1984: Analysisrequest "Add XX ARs" context action not translated
 Issue-1997: Calculation "Formula" field description keeps untranslated
 Issue-1981: Transifex Error processing bika/lims/skins/bika/bika_widgets/referencewidget.pt
 Issue-1975: Matching the labels to the fields is not easy when the user wants to add a single AR
