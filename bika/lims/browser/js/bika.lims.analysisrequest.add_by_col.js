@@ -697,10 +697,10 @@ function AnalysisRequestAddByCol() {
             }
             // select element
             else if ($(td1).find('select').length > 0) {
-                var input = $(td1).find('.rejectionwidget-input-other').val();
+                var input = $(td1).find('select').val();
                 for (var arnum = 1; arnum < nr_ars; arnum++) {
                     td = $(tr).find('td[arnum="' + arnum + '"]')[0];
-                    e = $(td).find('.rejectionwidget-input-other')[0];
+                    e = $(td).find('select')[0];
                     $(e).val(input);
                     $(e).trigger('copy');
                 }
