@@ -16,4 +16,6 @@
  <column value="SamplingRoundUID"/>
  <column value="review_state"/>
  <index name="Identifiers" meta_type="KeywordIndex"/>
+ <index name="getDateValidated" meta_type="DateIndex"/>
+ <index name="getDateImported" meta_type="DateIndex"/>
 </object>

@@ -9,7 +9,9 @@
     <adapter name="BatchDate" factory=".batch.BatchDate" />
     <adapter name="Priority" factory=".analysisrequest.Priority" />
     <adapter name="BatchUID" factory=".analysisrequest.BatchUID" />
+    <adapter name="getDateImported" factory=".arimport.getDateImported" />
     <adapter name="getDatePublished" factory=".analysisrequest.getDatePublished" />
+    <adapter name="getDateValidated" factory=".arimport.getDateValidated" />
     <adapter name="SamplingRoundUID" factory=".analysisrequest.SamplingRoundUID" />
     <adapter name="getDepartmentUIDs" factory=".analysisrequest.getDepartmentUIDs" />
     <adapter name="getDepartmentUID" factory=".analysis.getDepartmentUID" />

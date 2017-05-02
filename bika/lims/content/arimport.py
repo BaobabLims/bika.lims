@@ -18,6 +18,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IARImport, IClient
 from bika.lims.utils import tmpID, getUsers
 from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.workflow import getTransitionDate
 from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
@@ -37,6 +38,8 @@ from Products.DataGridField import DatetimeColumn
 from Products.DataGridField import LinesColumn
 from Products.DataGridField import SelectColumn
 from Products.DataGridField import TimeColumn
+from plone import api
+from plone.indexer import indexer
 from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
@@ -77,6 +80,25 @@ ClientName = StringField(
     searchable=True,
     widget=StringWidget(
         label=_("Client Name"),
+        visible=False
+    ),
+)
+Client = ReferenceField(
+    'Client',
+    allowed_types=('Client',),
+    relationship='ARImportClient',
+    referenceClass=HoldingReference,
+    vocabulary_display_path_bound=sys.maxint,
+    widget=ReferenceWidget(
+        label=_('Client'),
+        size=20,
+        visible=True,
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+        popup_width='300px',
+        colModel=[#{'columnName': 'UID', 'hidden': True},
+                  {'columnName': 'Name', 'width': '100',
+                   'label': _('Name')}],
     ),
 )
 
@@ -128,7 +150,7 @@ Batch = ReferenceField(
     'Batch',
     allowed_types=('Batch',),
     relationship='ARImportBatch',
-    widget=bReferenceWidget(
+    widget=ReferenceWidget(
         label=_('Batch'),
         visible=True,
         catalog_name='bika_catalog',
@@ -219,6 +241,7 @@ schema = BikaSchema.copy() + Schema((
     Filename,
     NrSamples,
     ClientName,
+    Client,
     ClientID,
     ClientOrderNumber,
     ClientReference,
@@ -408,7 +431,7 @@ class ARImport(BaseFolder):
         # document has been written to, and redirect() fails here
         self.REQUEST.response.write(
             '<script>document.location.href="%s"</script>' % (
-                self.absolute_url()))
+                self.aq_parent.absolute_url()))
 
     def get_header_values(self):
         """Scrape the "Header" values from the original input file
@@ -446,7 +469,9 @@ class ARImport(BaseFolder):
         if not headers:
             return False
 
-        # Plain header fields that can be set into plain schema fields:
+        if client:
+            self.setClient(client)
+
         for h, f in [
             ('File name', 'Filename'),
             ('No of Samples', 'NrSamples'),
@@ -460,7 +485,6 @@ class ARImport(BaseFolder):
                 field = self.schema[f]
                 field.set(self, v)
             del (headers[h])
-
         # Primary Contact
         v = headers.get('Contact', None)
         contacts = [x for x in client.objectValues('Contact')]
@@ -782,9 +806,9 @@ class ARImport(BaseFolder):
         client = self.aq_parent
 
         # Verify Client Name
-        if self.getClientName() != client.Title():
+        if self.getClient() != client:
             self.error("%s: value is invalid (%s)." % (
-                'Client name', self.getClientName()))
+                'Client name', self.getClient()))
 
         # Verify Client ID
         if self.getClientID() != client.getClientID():
@@ -1028,5 +1052,13 @@ class ARImport(BaseFolder):
         errors.append(msg)
         self.setErrors(errors)
 
+
+@indexer(IARImport)
+def getDateValidated(instance):
+    return getTransitionDate(instance, 'validate')
+
+@indexer(IARImport)
+def getDateImported(instance):
+    return getTransitionDate(instance, 'import')
 
 atapi.registerType(ARImport, PROJECTNAME)

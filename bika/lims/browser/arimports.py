@@ -39,6 +39,8 @@ class ARImportsView(BikaListingView):
             'cancellation_state': 'active',
             'sort_on': 'sortable_title',
         }
+        #self.allow_edit = True
+        self.show_select_column = True
         self.context_actions = {}
         if IClient.providedBy(self.context):
             self.context_actions = {
@@ -57,19 +59,45 @@ class ARImportsView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'Title': {'title': _('Title')},
-            'Client': {'title': _('Client')},
-            'Filename': {'title': _('Filename')},
-            'Creator': {'title': _('Date Created')},
-            'DateCreated': {'title': _('Date Created')},
-            'DateValidated': {'title': _('Date Validated')},
-            'DateImported': {'title': _('Date Imported')},
-            'state_title': {'title': _('State')},
+            'Title': {'title': _('Title'),
+                      'index': 'sortable_title'},
+            'Client': {'title': _('Client'),
+                       'sortable': False},
+            'Filename': {'title': _('Filename'),
+                         'sortable': False},
+            'Creator': {'title': _('Creator')},
+            'DateCreated': {'title': _('Date Created'),
+                            'index':'created'},
+            'DateValidated': {'title': _('Date Validated'),
+                              'index': 'getDateValidated'},
+            'DateImported': {'title': _('Date Imported'),
+                             'index': 'getDateImported'},
+            'state_title': {'title': _('State'),
+                            'index': 'review_state'},
         }
+
         self.review_states = [
+            {'id': 'all',
+             'title': _('All'),
+             'contentFilter': {'review_state': ['invalid', 'valid',
+                                                'imported', 'initial']},
+             'transitions': [{'id': 'cancel'},],
+             'custom_actions': [],
+             'columns': ['Title',
+                         'Creator',
+                         'Filename',
+                         'Client',
+                         'DateCreated',
+                         'DateValidated',
+                         'DateImported',
+                         'state_title']},
             {'id': 'default',
              'title': _('Pending'),
-             'contentFilter': {'review_state': ['invalid', 'valid']},
+             'sort_on': 'DateValidated',
+             'contentFilter': {'review_state': ['invalid', 'valid'],
+                                'sort_order': 'ascending'},
+             'transitions': [{'id': 'cancel'},],
+             'custom_actions': [],
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -80,7 +108,11 @@ class ARImportsView(BikaListingView):
                          'state_title']},
             {'id': 'imported',
              'title': _('Imported'),
-             'contentFilter': {'review_state': 'imported'},
+             'sort_on': 'DateImported',
+             'contentFilter': {'review_state': 'imported',
+                                'sort_order': 'ascending'},
+             'transitions': [{'id': 'cancel'},],
+             'custom_actions': [],
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -95,6 +127,9 @@ class ARImportsView(BikaListingView):
                  'review_state': ['initial', 'invalid', 'valid', 'imported'],
                  'cancellation_state': 'cancelled'
              },
+             'transitions': [{'id': 'cancel'},
+                             {'id': 'reinstate'}, ],
+             'custom_actions': [],
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -122,7 +157,7 @@ class ARImportsView(BikaListingView):
             items[x]['Filename'] = obj.getFilename()
             parent = obj.aq_parent
             items[x]['Client'] = parent if IClient.providedBy(parent) else ''
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % (
+            items[x]['replace']['Client'] = "<a href='%s'>%s/arimports</a>" % (
                 parent.absolute_url(), parent.Title())
             items[x]['DateCreated'] = ulocalized_time(
                 obj.created(), long_format=True, time_only=False, context=obj)
@@ -140,11 +175,48 @@ class ClientARImportsView(ARImportsView):
         self.contentFilter['path'] = {
             'query': '/'.join(context.getPhysicalPath())
         }
+        #self.allow_edit = True
+        self.show_select_column = True
+
+        self.columns = {
+            'Title': {'title': _('Title'),
+                      'index': 'sortable_title'},
+            'Client': {'title': _('Client'),
+                       'sortable': False},
+            'Filename': {'title': _('Filename'),
+                         'sortable': False},
+            'Creator': {'title': _('Creator')},
+            'DateCreated': {'title': _('Date Created'),
+                            'index':'created'},
+            'DateValidated': {'title': _('Date Validated'),
+                              'index': 'getDateValidated'},
+            'DateImported': {'title': _('Date Imported'),
+                             'index': 'getDateImported'},
+            'state_title': {'title': _('State'),
+                            'index':'review_state'},
+        }
 
         self.review_states = [
+            {'id': 'all',
+             'title': _('All'),
+             'contentFilter': {'review_state': ['invalid', 'valid', 
+                                                'imported', 'initial']},
+             'transitions': [{'id': 'cancel'},],
+             'custom_actions': [],
+             'columns': ['Title',
+                         'Creator',
+                         'Filename',
+                         'DateCreated',
+                         'DateValidated',
+                         'DateImported',
+                         'state_title']},
             {'id': 'default',
              'title': _('Pending'),
-             'contentFilter': {'review_state': ['invalid', 'valid']},
+             'sort_on': 'DateValidated',
+             'contentFilter': {'review_state': ['invalid', 'valid'],
+                               'sort_order': 'ascending'},
+             'transitions': [{'id': 'cancel'},],
+             'custom_actions': [],
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -154,7 +226,11 @@ class ClientARImportsView(ARImportsView):
                          'state_title']},
             {'id': 'imported',
              'title': _('Imported'),
-             'contentFilter': {'review_state': 'imported'},
+             'sort_on': 'DateImported',
+             'contentFilter': {'review_state': 'imported',
+                               'sort_order': 'ascending'},
+             'transitions': [{'id': 'cancel'},],
+             'custom_actions': [],
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -168,6 +244,9 @@ class ClientARImportsView(ARImportsView):
                  'review_state': ['initial', 'invalid', 'valid', 'imported'],
                  'cancellation_state': 'cancelled'
              },
+             'transitions': [{'id': 'cancel'},
+                             {'id': 'reinstate'}, ],
+             'custom_actions': [],
              'columns': ['Title',
                          'Creator',
                          'Filename',
