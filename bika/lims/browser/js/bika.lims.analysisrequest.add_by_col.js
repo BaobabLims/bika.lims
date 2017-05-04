@@ -1117,7 +1117,7 @@ function AnalysisRequestAddByCol() {
                 var arnum = $(this).parents('td').attr('arnum');
                 // We'll use this array to get the ALL profiles
                 var profiles = $("#Profiles-" + arnum);
-                if (profiles.attr()){
+                if (profiles.attr('uid')){
                   var uids_array = profiles.attr('uid').split(',');
                   template_unset(arnum);
                   for (var i = 0; i < uids_array.length; i++) {
