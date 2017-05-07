@@ -1,49 +1,115 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="bika">
 
-  <monkey:patch
-      description="Better jsonapi error handler."
-      module="plone.jsonapi.core.browser.decorators"
-      original="handle_errors"
-      replacement="bika.lims.jsonapi.handle_errors"
+  <!-- <Catalog> -->
+
+  <!-- Default catalog adapter -->
+  <adapter
+      for="*"
+      factory=".catalog.Catalog"
       />
 
-  <utility
-    name="bika.lims.jsonapi.create"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".create.Create" />
+  <!-- Default catalog query adapter -->
+  <adapter
+      for=".interfaces.ICatalog"
+      factory=".catalog.CatalogQuery"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.read"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".read.Read" />
 
-  <utility
-    name="bika.lims.jsonapi.update"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".update.Update" />
+  <!-- <Data Provider> -->
 
-  <utility
-    name="bika.lims.jsonapi.remove"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".remove.Remove" />
-    
-  <utility
-    name="bika.lims.jsonapi.getusers"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".getusers.getUsers" />
+  <!-- Default data provider (AT based content types) -->
+  <adapter
+      for="*"
+      factory=".dataproviders.ATDataProvider"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.doactionfor"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".doactionfor.doActionFor" />
+  <!-- Adapter for Catalog Brains -->
+  <adapter
+      for="Products.ZCatalog.interfaces.ICatalogBrain"
+      factory=".dataproviders.ZCDataProvider"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.calculate_partitions"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".calculate_partitions.calculate_partitions" />
+  <!-- Adapter for the Plone Site -->
+  <adapter
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      factory=".dataproviders.SiteRootDataProvider"
+      />
+
+
+  <!-- <Data Manager> -->
+
+  <!-- Default Data adapter (AT based content types) -->
+  <adapter
+      for="*"
+      factory=".datamanagers.ATDataManager"
+      />
+
+  <!-- Data adapter for Catalog brains -->
+  <adapter
+      for="Products.ZCatalog.interfaces.ICatalogBrain"
+      factory=".datamanagers.BrainDataManager"
+      />
+
+  <!-- Data adapter for the Portal object -->
+  <adapter
+      for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot"
+      factory=".datamanagers.PortalDataManager"
+      />
+
+
+  <!-- <Field Manager> -->
+
+  <!-- Adapter for AT Fields -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IField"
+      factory=".fieldmanagers.ATFieldManager"
+      />
+
+  <!-- Adapter for Text Fields -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.ITextField"
+      factory=".fieldmanagers.TextFieldManager"
+      />
+
+  <!-- Adapter for DateTime Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IDateTimeField"
+      factory=".fieldmanagers.DateTimeFieldManager"
+      />
+
+  <!-- Adapter for File Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IFileField"
+      factory=".fieldmanagers.FileFieldManager"
+      />
+
+  <!-- Adapter for Bika LIMS Proxy Field -->
+  <adapter
+      for="bika.lims.interfaces.IProxyField"
+      factory=".fieldmanagers.ProxyFieldManager"
+      />
+
+  <!-- Adapter for Reference Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IReferenceField"
+      factory=".fieldmanagers.ReferenceFieldManager"
+      />
+
+  <!-- <Batching> -->
+
+  <!-- Adapter for Plone Batching -->
+  <adapter
+      for="*"
+      factory=".batch.Batch"
+      />
+
+  <!-- Adapter for Plone 4.2 Batching -->
+  <adapter
+      for="ZTUtils.Batch.Batch"
+      factory=".batch.Batch42"
+      />
 
 </configure>
