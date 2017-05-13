@@ -3,9 +3,12 @@
 import json
 import datetime
 
+import Missing
 from DateTime import DateTime
 from AccessControl import Unauthorized
 from Products.CMFPlone.PloneBatch import Batch
+from Products.ZCatalog.Lazy import LazyMap
+from Acquisition import ImplicitAcquisitionWrapper
 
 from plone import api as ploneapi
 from plone.jsonapi.core import router
@@ -20,10 +23,22 @@ from bika.lims.jsonapi.interfaces import IBatch
 from bika.lims.jsonapi.interfaces import ICatalog
 from bika.lims.jsonapi.exceptions import APIError
 from bika.lims.jsonapi.interfaces import IDataManager
+from bika.lims.jsonapi.interfaces import IFieldManager
 from bika.lims.jsonapi.interfaces import ICatalogQuery
 from bika.lims.utils.analysisrequest import create_analysisrequest as create_ar
 
+import pkg_resources
+try:
+    pkg_resources.get_distribution('plone.app.textfield')
+    from plone.app.textfield.interfaces import IRichTextValue
+except (pkg_resources.DistributionNotFound, ImportError):
+    HAS_PLONE_APP_TEXTFIELD = False
+else:
+    HAS_PLONE_APP_TEXTFIELD = True
+
 _marker = object()
+
+DEFAULT_ENDPOINT = "bika.lims.jsonapi.v2.get"
 
 
 # -----------------------------------------------------------------------------
@@ -287,6 +302,19 @@ def is_at_content(brain_or_object):
     return api.is_at_content(brain_or_object)
 
 
+def is_dexterity_content(brain_or_object):
+    """Proxy to bika.lims.api.is_dexterity_content
+    """
+    return api.is_dexterity_content(brain_or_object)
+
+
+def get_field(brain_or_object, name, default=None):
+    """Return the named field
+    """
+    fields = api.get_fields(brain_or_object)
+    return fields.get(name, default)
+
+
 def is_root(brain_or_object):
     """Proxy to bika.lims.api.is_portal
     """
@@ -348,6 +376,75 @@ def is_json_serializable(thing):
         return False
 
 
+def to_json_value(obj, fieldname, value=_marker, default=None):
+    """Convert the value to a JSON compatible value
+
+    This is called by the dataprovider adapter
+
+    TODO: Refactor logic to DataManager or FieldManager Adapter.
+          -> Add a to_json() method or use just the std. getter
+
+    :param obj: Content object
+    :type obj: ATContentType/DexterityContentType
+    :param fieldname: Schema name of the field
+    :type fieldname: str/unicode
+    :param value: The field value
+    :type value: depends on the field type
+    :returns: JSON encoded field value
+    :rtype: field dependent
+    """
+
+    # returned from catalog brain metadata
+    if value is Missing.Value:
+        return default
+
+    # get the field
+    field = get_field(obj, fieldname)
+
+    # handle reference fields
+    if is_reference_field(field):
+        return get_reference_info(obj, fieldname)
+
+    # handle file fields
+    if is_file_field(field):
+        return get_file_info(obj, fieldname)
+
+    # handle image fields
+    if is_image_field(field):
+        return get_file_info(obj, fieldname)
+
+    # extract the value from the object if omitted
+    if value is _marker:
+        value = IDataManager(obj).get(fieldname)
+
+    # handle objects from reference fields
+    if isinstance(value, ImplicitAcquisitionWrapper):
+        return get_url_info(value)
+
+    # handle Catalog LazyMap List
+    if is_lazy_map(value):
+        value = map(get_url_info, value)
+
+    # check if we have a date
+    if is_date(value):
+        return to_iso_date(value)
+
+    # handle richtext values
+    if is_richtext_value(value):
+        value = value.output
+
+    # check if the value is callable
+    if callable(value):
+        value = value()
+
+    # check if the value is JSON serializable
+    if not is_json_serializable(value):
+        logger.warn("Output {} is not JSON serializable".format(repr(value)))
+        return default
+
+    return value
+
+
 def is_date(thing):
     """Checks if the given thing represents a date
 
@@ -361,6 +458,63 @@ def is_date(thing):
                   datetime.date,
                   DateTime)
     return isinstance(thing, date_types)
+
+
+def is_file_field(field):
+    """Checks if the field is a file field
+
+    :param field: The field to test
+    :type thing: field object
+    :returns: True if the field is a file field
+    :rtype: bool
+    """
+    return getattr(field, "type", None) == "file"
+
+
+def is_image_field(field):
+    """Checks if the field is an image field
+
+    :param field: The field to test
+    :type thing: field object
+    :returns: True if the field is an image field
+    :rtype: bool
+    """
+    return getattr(field, "type", None) == "image"
+
+
+def is_reference_field(field):
+    """Checks if the field is a reference field
+
+    :param field: The field to test
+    :type thing: field object
+    :returns: True if the field is a reference field
+    :rtype: bool
+    """
+    return getattr(field, "type", None) == "reference"
+
+
+def is_lazy_map(thing):
+    """Checks if the passed in thing is a LazyMap
+
+    :param thing: The thing to test
+    :type thing: any
+    :returns: True if the thing is a richtext value
+    :rtype: bool
+    """
+    return isinstance(thing, LazyMap)
+
+
+def is_richtext_value(thing):
+    """Checks if the value is a richtext value
+
+    :param thing: The thing to test
+    :type thing: any
+    :returns: True if the thing is a richtext value
+    :rtype: bool
+    """
+    if HAS_PLONE_APP_TEXTFIELD:
+        return IRichTextValue.providedBy(thing)
+    return False
 
 
 def to_iso_date(date, default=None):
@@ -559,7 +713,7 @@ def is_creation_allowed(portal_type):
     return portal_type in allowed_portal_types
 
 
-def url_for(endpoint, default="bika.lims.jsonapi.v2.get", **values):
+def url_for(endpoint, default=DEFAULT_ENDPOINT, **values):
     """Looks up the API URL for the given endpoint
 
     :param endpoint: The name of the registered route (aka endpoint)
@@ -577,7 +731,7 @@ def url_for(endpoint, default="bika.lims.jsonapi.v2.get", **values):
         return router.url_for(default, force_external=True, values=values)
 
 
-def get_endpoint(brain_or_object, default="bika.lims.jsonapi.v2.get"):
+def get_endpoint(brain_or_object, default=DEFAULT_ENDPOINT):
     """Calculate the endpoint for this object
 
     :param brain_or_object: A single catalog brain or content object
@@ -672,7 +826,10 @@ def get_object_by_path(path):
         segments = path.split("/")
         path = "/".join(segments[2:])
 
-    return portal.restrictedTraverse(str(path))
+    try:
+        return portal.restrictedTraverse(str(path))
+    except AttributeError:
+        fail(404, "No object could be found at {}".format(str(path)))
 
 
 def is_anonymous():
@@ -891,6 +1048,68 @@ def get_children_info(brain_or_object, complete=False):
         "children_count": len(items),
         "children": items
     }
+
+
+def get_file_info(obj, fieldname, default=None):
+    """Extract file data from a file field
+
+    :param obj: Content object
+    :type obj: ATContentType/DexterityContentType
+    :param fieldname: Schema name of the field
+    :type fieldname: str/unicode
+    :returns: File data mapping
+    :rtype: dict
+    """
+
+    # extract the file field from the object if omitted
+    field = get_field(obj, fieldname)
+
+    # get the value with the fieldmanager
+    fm = IFieldManager(field)
+
+    # return None if we have no file data
+    if fm.get_size(obj) == 0:
+        return None
+
+    out = {
+        "content_type": fm.get_content_type(obj),
+        "filename": fm.get_filename(obj),
+        "download": fm.get_download_url(obj),
+    }
+
+    # only return file data only if requested (?filedata=yes)
+    if req.get_filedata(False):
+        data = fm.get_data(obj)
+        out["data"] = data.encode("base64")
+
+    return out
+
+
+def get_reference_info(obj, fieldname, default=None):
+    """Extract data from a reference field
+
+    :param obj: Content object
+    :type obj: ATContentType/DexterityContentType
+    :param fieldname: Schema name of the field
+    :type fieldname: str/unicode
+    :returns: File data mapping
+    :rtype: dict
+    """
+
+    # extract the file field from the object if omitted
+    field = get_field(obj, fieldname)
+
+    # get the value with the fieldmanager
+    fm = IFieldManager(field)
+    value = fm.get(obj)
+
+    out = []
+    for item in _.to_list(value):
+        if isinstance(item, basestring):
+            out.append(item)
+        else:
+            out.append(get_url_info(item))
+    return out
 
 
 def find_objects(uid=None):
