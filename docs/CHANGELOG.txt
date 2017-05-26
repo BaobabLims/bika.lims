@@ -4,6 +4,13 @@
 - LIMS-2596: AR and Sample view fields that need to stay editable
 
 
+3.2.1b2 (unreleased)
+--------------------
+
+- no changes yet
+
+
+
 3.2.1b1 (2017-05-26)
 --------------------
 
