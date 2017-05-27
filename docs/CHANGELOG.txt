@@ -3,6 +3,10 @@
 
 - no changes yet
 
+3.2.1b2 (2017-05-27)
+--------------------
+
+- Fixed broken release
 
 3.2.1b1 (2017-05-26)
 --------------------
@@ -780,35 +784,35 @@ assigned. These defaults can be changed in BikaSetup > Security.
 2012-01-23
 ----------
 
- - Made Bika compatible with Plone 4.1
- - Sampler and Preserver roles, users and permissions
- - Sampling and Preservation workflows
- - Inactive and Cancellation Workflows
- - Pre-preserved Containers
- - Automatic versioning for some bika_setup types
- - Analyst and Instrument on Worksheet templates
- - XLSX setup data loader
- - Sample disposal date based on date sampled, not date received.
- - Internal ID Server by default
- - user defined calculations and interim fields
- - Dry Matter results option does not appear until enabled in Site Setup
- - Accreditation portlet disabled until enabled in Site Setup
- - BikaListingView
- - New icons
- - (mostly) usable at 800x600
- - Column display toggles
- - Future dated samples and ARs
- - Accreditation template: i18n in locales/manual.pot/accreditation_*
- - intermediate workflow state for analyses requiring attachments
- - Labmanager has Site Administrator role (not Manager)
- - 'Indeterminate' results
- - use portal_factory everywhere
- - working test suite
- - static resource directories
- - Merged BikaMembers types
- - CoordinateField/Widget
- - DurationField/Widget
- - CustomRecordsWidget
+- Made Bika compatible with Plone 4.1
+- Sampler and Preserver roles, users and permissions
+- Sampling and Preservation workflows
+- Inactive and Cancellation Workflows
+- Pre-preserved Containers
+- Automatic versioning for some bika_setup types
+- Analyst and Instrument on Worksheet templates
+- XLSX setup data loader
+- Sample disposal date based on date sampled, not date received.
+- Internal ID Server by default
+- user defined calculations and interim fields
+- Dry Matter results option does not appear until enabled in Site Setup
+- Accreditation portlet disabled until enabled in Site Setup
+- BikaListingView
+- New icons
+- (mostly) usable at 800x600
+- Column display toggles
+- Future dated samples and ARs
+- Accreditation template: i18n in locales/manual.pot/accreditation_*
+- intermediate workflow state for analyses requiring attachments
+- Labmanager has Site Administrator role (not Manager)
+- 'Indeterminate' results
+- use portal_factory everywhere
+- working test suite
+- static resource directories
+- Merged BikaMembers types
+- CoordinateField/Widget
+- DurationField/Widget
+- CustomRecordsWidget
 
 
 2.3.3 Bug fix release
