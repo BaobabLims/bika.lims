@@ -32,6 +32,7 @@ Feedback and support
 * Bika Users List: `bika-users <http://lists.sourceforge.net/lists/listinfo/bika-users>`_
 * Bika Developers List: `bika-developers <http://lists.sourceforge.net/lists/listinfo/bika-developers>`_
 * LIMS design List: `lims-design <https://groups.google.com/forum/?hl=en#%21forum/bika-design>`_
-* Issue Tracker: `http://jira.bikalabs.com/ <http://jira.bikalabs.com>`_
+* GitHub Issue Tracker: `github-issues <https://github.com/bikalabs/bika.lims/issues>`
+* Jira Tracker: `https://github.com/bikalabs/bika.lims/issuescom/ <http://jira.bikalabs.com>`_
 * IRC: `irc://freenode.net/#bika <irc://freenode.net/#bika>`_
 * Slack: `bikalims.slack.com <http://slackin.bikalims.org>`_
