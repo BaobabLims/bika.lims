@@ -1,7 +1,7 @@
 3.2.1b3 (unreleased)
 --------------------
 
-- no changes yet
+- Issue-2052: Computed Sample Field "SampleTypeUID" does not check if a SampleType is set
 
 
 3.2.1b2 (2017-05-27)
