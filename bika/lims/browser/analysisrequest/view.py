@@ -171,9 +171,10 @@ class AnalysisRequestViewView(BrowserView):
                 'size': fsize,
                 'name': file.filename,
                 'Icon': file.icon,
-                'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                 'absolute_url': att.absolute_url(),
                 'UID': att.UID(),
+                'report_option': att.getReportOption(),
             })
 
         for analysis in analyses:
@@ -191,9 +192,10 @@ class AnalysisRequestViewView(BrowserView):
                     'size': fsize,
                     'name': file.filename,
                     'Icon': file.icon,
-                    'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                    'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                     'absolute_url': att.absolute_url(),
                     'UID': att.UID(),
+                    'report_option': att.getReportOption(),
                 })
         return attachments
 

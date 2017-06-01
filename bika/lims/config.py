@@ -59,6 +59,11 @@ ATTACHMENT_OPTIONS = DisplayList((
     ('p', _('Permitted')),
     ('n', _('Not Permitted')),
 ))
+ATTACHMENT_REPORT_OPTIONS = DisplayList((
+    ('a', _('Attach to Report')),
+    ('i', _('Ignore in Report')),
+    ('r', _('Render in Report')),
+))
 DEFAULT_AR_SPECS = DisplayList((
     ('ar_specs', _('Analysis Request Specifications')),
     ('lab_sampletype_specs', _('Sample Type Specifications (Lab)')),
