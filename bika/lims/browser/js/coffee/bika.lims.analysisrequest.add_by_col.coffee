@@ -1,4 +1,4 @@
-### Please use this command to compile this file within this directory:
+### Please use this command to compile this file into the parent `js` directory:
     coffee -w -o ../ -c bika.lims.analysisrequest.add_by_col.coffee
 ###
 
