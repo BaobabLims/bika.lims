@@ -27,6 +27,11 @@ from rigaku.supermini import wxrf
 from rochecobas.taqman import model48
 from rochecobas.taqman import model96
 from scilvet.abc import plus
+from eltra.cs import cs2000
+from rigaku.supermini import wxrf
+from myself import myinstrument
+from nuclisens import easyq
+from shimadzu.nexera import LC2040C, LCMS8050
 from sealanalytical.aq2 import aq2
 from shimadzu.gcms import tq8030
 from sysmex.xs import i500, i1000
@@ -63,6 +68,10 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.arena.xt20',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
+           'myself.myinstrument',
+           'nuclisens.easyq',
+           'shimadzu.nexera.LC2040C',
+           'shimadzu.nexera.LCMS8050',
            ]
 
 
