@@ -7,7 +7,7 @@
 
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import logger
-from bika.lims.content.analysis import Analysis
+# from bika.lims.content.analysis import Analysis
 from bika.lims.testing import BIKA_SIMPLE_FIXTURE
 from bika.lims.tests.base import BikaSimpleTestCase
 from bika.lims.utils import tmpID
