@@ -31,6 +31,7 @@ from eltra.cs import cs2000
 from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
+from shimadzu.gcms import qp2010se
 from shimadzu.nexera import LC2040C, LCMS8050
 from sealanalytical.aq2 import aq2
 from shimadzu.gcms import tq8030
@@ -70,6 +71,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.multiskan.go',
            'myself.myinstrument',
            'nuclisens.easyq',
+           'shimadzu.gcms.qp2010se',
            'shimadzu.nexera.LC2040C',
            'shimadzu.nexera.LCMS8050',
            ]
