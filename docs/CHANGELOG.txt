@@ -2,6 +2,7 @@
 ------------------
 
 - LIMS-2596: AR and Sample view fields that need to stay editable
+- Issue-2068: Member Discount is always applied on adding new ARs
 - Issue-2052: Computed Sample Field "SampleTypeUID" does not check if a SampleType is set
 
 
