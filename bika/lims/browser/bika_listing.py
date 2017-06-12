@@ -740,12 +740,16 @@ class BikaListingView(BrowserView):
             msg = "category_index must be defined when using ajax_categories."
             raise AssertionError(msg)
         # Getting the bika_listing_filter_bar cookie
-        cookie_filter_bar = self.request.get('bika_listing_filter_bar', '')
+        cookie_value = self.request.get('bika_listing_filter_bar', '')
         self.request.response.setCookie(
             'bika_listing_filter_bar', None, path='/', max_age=0)
         # Saving the filter bar values
-        cookie_filter_bar = json.loads(cookie_filter_bar) if\
-            cookie_filter_bar else ''
+        cookie_filter_bar = ''
+        try:
+            cookie_filter_bar = json.loads(cookie_value)
+        except ValueError, e:
+            logger.error('%s: cookie value %s' % (str(e), cookie_value))
+
         # Creating a dict from cookie data
         cookie_data = {}
         for k, v in cookie_filter_bar:
