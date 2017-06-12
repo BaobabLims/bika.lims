@@ -129,7 +129,8 @@ def create_analysisrequest(context, request, values, analyses=None,
     if not secondary:
         # Create sample partitions
         if not partitions:
-            partitions = [{'services': service_uids}]
+            partitions = values.get('Partitions',
+                            [{'services': service_uids}])
         for n, partition in enumerate(partitions):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"
