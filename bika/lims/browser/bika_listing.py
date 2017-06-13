@@ -830,7 +830,7 @@ class BikaListingView(BrowserView):
         >>> browser.open(portal_url+"/bika_setup/bika_sampletypes/folder_view?",
         ... "list_pagesize=10&list_review_state=default")
         >>> browser.contents
-        '...Water...'
+        '...Apple Pulp...'
         """
 
         # self.contentsMethod = self.context.getFolderContents
