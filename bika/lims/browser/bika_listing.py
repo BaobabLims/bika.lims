@@ -524,10 +524,9 @@ class BikaListingView(BrowserView):
         for k, v in self.review_state.get('contentFilter', {}).items():
             self.contentFilter[k] = v
 
-        # sort on
-        self.sort_on = self.sort_on \
-            if hasattr(self, 'sort_on') and self.sort_on \
-            else None
+        # SORTING
+        # Precedence is request, sort_on attribute, contentFilter sort_on value
+        self.sort_on = getattr(self, "sort_on", self.contentFilter.get("sort_on"))
         self.sort_on = self.request.get(form_id + '_sort_on', self.sort_on)
         self.sort_order = self.request.get(form_id + '_sort_order', 'ascending')
         self.manual_sort_on = self.request.get(form_id + '_manual_sort_on', None)
@@ -544,41 +543,43 @@ class BikaListingView(BrowserView):
                 else:
                     # The column must be manually sorted using python
                     self.manual_sort_on = self.sort_on
+            elif self.sort_on in ["sortable_title"]:
+                logger.info("{}: sort_on={}".format(
+                    self.__class__.__name__, self.sort_on))
             else:
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: sort_on is '{}', not a valid column".format(
-                    self, self.sort_on)
+                    self.__class__.__name__, self.sort_on)
                 logger.error(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
-            self.manual_sort_on = self.manual_sort_on[0] \
-                                if type(self.manual_sort_on) in (list, tuple) \
-                                else self.manual_sort_on
+            if type(self.manual_sort_on) in (list, tuple):
+                self.manual_sort_on = self.manual_sort_on[0]
             if self.manual_sort_on not in self.columns.keys():
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: manual_sort_on is '{}', not a valid column".format(
-                    self, self.manual_sort_on)
+                    self.__class__.__name__, self.manual_sort_on)
                 logger.error(msg)
                 self.manual_sort_on = None
 
         if self.sort_on or self.manual_sort_on:
             # By default, if sort_on is set, sort the items ASC
             # Trick to allow 'descending' keyword instead of 'reverse'
-            self.sort_order = 'reverse' if self.sort_order \
-                                        and self.sort_order[0] in ['d', 'r'] \
-                                        else 'ascending'
+            if self.sort_order != "ascending":
+                self.sort_order = "descending"
         else:
             # By default, sort on created
-            self.sort_order = 'reverse'
+            self.sort_order = 'descending'
             self.sort_on = 'created'
 
         self.contentFilter['sort_order'] = self.sort_order
         if self.sort_on:
             # Ensure we have a valid sort_on index is valid
             if self.sort_on not in catalog.indexes():
-                logger.warn("Sort index 'sort_on={}' is not in available indexes for the requested catalog '{}'.".format(
-                    self.sort_on, self.catalog))
+                logger.warn("{}: Sort index 'sort_on={}' is not in available indexes "
+                            "for the requested catalog '{}'.".format(
+                                self.__class__.__name__, self.sort_on, self.catalog))
             else:
                 self.contentFilter['sort_on'] = self.sort_on
 
