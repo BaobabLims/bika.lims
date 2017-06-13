@@ -318,12 +318,6 @@ class AnalysisServicesView(BikaListingView):
             for i in range(len(self.review_states)):
                 self.review_states[i]['columns'].remove('Price')
 
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.an_cats = bsc(portal_type="AnalysisCategory",
-                           sort_on="sortable_title")
-        self.an_cats_order = dict([(b.Title, "{:04}".format(a))
-                                  for a, b in enumerate(self.an_cats)])
-
     def isItemAllowed(self, obj):
         """
         It checks if the item can be added to the list depending on the
@@ -414,6 +408,12 @@ class AnalysisServicesView(BikaListingView):
         return item
 
     def folderitems(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.an_cats = bsc(portal_type="AnalysisCategory",
+                           sort_on="sortable_title")
+        self.an_cats_order = dict([(b.Title, "{:04}".format(a))
+                                  for a, b in enumerate(self.an_cats)])
+
         items = super(AnalysisServicesView, self).folderitems()
         if self.do_cats:
             self.categories = map(lambda x: x[0],
