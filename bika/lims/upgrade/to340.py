@@ -18,9 +18,13 @@ def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
 
     qi = portal.portal_quickinstaller
+    setup = portal.portal_setup
     ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
     logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.4.0'))
 
+    # Re-run the workflow import
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow')
+    
     # Sync the empty number generator with existing content
     prepare_number_generator(portal)
 
