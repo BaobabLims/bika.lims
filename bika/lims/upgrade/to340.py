@@ -9,11 +9,15 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.idserver import generateUniqueId
-# from bika.lims.numbergenerator import INumberGenerator
+from bika.lims.numbergenerator import INumberGenerator
+from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
+from Products.CMFPlone.utils import _createObjectByType
+from zope.component import getUtility
 
 
 def upgrade(tool):
-    """Upgrade step to prepare for refactored ID Server
+    """Upgrade step to 3.4.0
     """
     portal = aq_parent(aq_inner(tool))
 
@@ -22,8 +26,14 @@ def upgrade(tool):
     ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
     logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.4.0'))
 
-    # Re-run the workflow import
+    #Do nothing other than prepare for 3.4.0
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'content')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'rolemap')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     
     # Sync the empty number generator with existing content
     prepare_number_generator(portal)

@@ -16,12 +16,16 @@ from Acquisition import aq_parent
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes import atapi
-from Products.CMFPlone.utils import safe_unicode
+from Products.Archetypes.atapi import StringField
 from Products.Archetypes.utils import DisplayList
+from Products.CMFCore import permissions
+from Products.CMFPlone.utils import safe_unicode
 
 from plone import api
 from zope.interface import implements
 
+from Products.Archetypes.Widget import SelectionWidget
+from Products.CMFCore.utils import getToolByName
 from bika.lims.utils import isActive
 from bika.lims.interfaces import IContact
 from bika.lims.content.person import Person
@@ -60,11 +64,31 @@ schema = Person.schema.copy() + atapi.Schema((
                              checkbox_bound=0,
                              label=_("Contacts to CC"),
                          )),
+    StringField(
+        'Department',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getClientDepartment',
+        acquire=True,
+        widget=SelectionWidget(
+            format="select",
+            label=_("Department"),
+            description=_("Which department does this contact work in?"),
+            visible={
+                'edit': 'visible',
+                'view': 'visible',
+                'add': 'edit',
+                'header_table': 'visible',
+            },
+            render_own_label=True,
+        ),
+    ),
 ))
 
 
 schema['JobTitle'].schemata = 'default'
-schema['Department'].schemata = 'default'
+#schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
 schema['title'].widget.visible = False
@@ -332,5 +356,16 @@ class Contact(Person):
             parent.manage_delLocalRoles([ username ])
             if hasattr(parent, 'reindexObjectSecurity'):
                 parent.reindexObjectSecurity()
+
+    def getClientDepartment(self):
+        """Return a list of sample preparation workflows.  These are identified
+        by scanning all workflow IDs for those beginning with "sampleprep".
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        client_departments = bsc(portal_type='ClientDepartment', sort_on = 'sortable_title')
+        prep_workflows = [['', ''], ]
+        for cds in client_departments:
+            prep_workflows.append([cds.id, cds.Title])
+        return DisplayList(prep_workflows)
 
 atapi.registerType(Contact, PROJECTNAME)
