@@ -35,6 +35,14 @@ schema = Organisation.schema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+    StringField(
+        'LaboratoryLicenseID',
+        write_permission = ManageBika,
+        widget=StringWidget(
+            label=_("Laboratory License ID"),
+            description=_("The Laboratory's License ID given by the state"),
+        ),
+    ),
     StringField('LabURL',
         schemata = 'Address',
         write_permission = ManageBika,
