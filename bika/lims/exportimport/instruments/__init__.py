@@ -10,7 +10,7 @@ import inspect
 
 #from generic import xml
 from abaxis.vetscan import vs2
-from agilent.masshunter import quantitative
+from agilent.masshunter import quantitative, masshunter
 from alere.pima import beads, cd4
 from beckmancoulter.access import model2
 from biodrop.ulite import ulite
@@ -45,6 +45,7 @@ from thermoscientific.qtegra import qtegra
 
 __all__ = ['abaxis.vetscan.vs2',
            'agilent.masshunter.quantitative',
+           'agilent.masshunter.masshunter',
            'alere.pima.beads',
            'alere.pima.cd4',
            'beckmancoulter.access.model2',
