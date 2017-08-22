@@ -82,7 +82,7 @@ function referencewidget_lookups(elements) {
 			event.preventDefault();
 			var fieldName = $(this).attr("name");
 			var skip;
-			var uid_element = $(this).siblings("input[$='_uid']")
+			var uid_element = $(this).siblings("input[$='_uid']");
 			var listing_div = $(this).siblings("div[id$='-listing']");
 			if ($(listing_div).length > 0) {
 				// Add selection to textfield value
@@ -124,6 +124,7 @@ function referencewidget_lookups(elements) {
 				$(this).val(ui.item[$(this).attr("ui_item")]);
 				$(this).attr("uid", ui.item.UID);
 				$(uid_element).val(ui.item.UID);
+				//console.log($(this).next("input").val());
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true) {
 					// Pass the entire selected item through to the selected handler
