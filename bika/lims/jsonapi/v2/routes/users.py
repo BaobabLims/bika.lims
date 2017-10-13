@@ -93,7 +93,7 @@ def get(context, request, username=None):
 
 
 @add_route("/auth", "bika.lims.jsonapi.v2.auth", methods=["GET"])
-@add_route("/users/auth", "bika.lims.jsonapi.v2.login", methods=["GET"])
+@add_route("/users/auth", "bika.lims.jsonapi.v2.auth", methods=["GET"])
 def auth(context, request):
     """ Basic Authentication
     """

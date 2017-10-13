@@ -3,13 +3,17 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.Archetypes.config import TOOL_NAME
-from Products.CMFCore.utils import getToolByName
-from zExceptions import BadRequest
-from bika.lims.utils import safe_unicode
+import sys
 import json
 import Missing
-import sys, traceback
+import traceback
+from zExceptions import BadRequest
+
+from Products.Archetypes.config import TOOL_NAME
+from Products.CMFCore.utils import getToolByName
+
+from bika.lims import api
+from bika.lims.utils import safe_unicode
 
 
 def handle_errors(f):
@@ -47,7 +51,7 @@ def load_brain_metadata(proxy, include_fields):
     """
     ret = {}
     for index in proxy.indexes():
-        if not index in proxy:
+        if index not in proxy:
             continue
         if include_fields and index not in include_fields:
             continue
@@ -148,24 +152,47 @@ def set_fields_from_request(obj, request):
     The list of fields for which schema mutators were found
     is returned.
     """
-    schema = obj.Schema()
+    schema = api.get_schema(obj)
+
     # fields contains all schema-valid field values from the request.
     fields = {}
+
+    def resolve_uids(fieldname, value):
+        brains = []
+        if value:
+            brains = resolve_request_lookup(obj, request, fieldname)
+            if not brains:
+                raise BadRequest("Can't resolve reference: %s" % fieldname)
+        if schema[fieldname].multiValued:
+            value = [b.UID for b in brains] if brains else []
+        else:
+            value = brains[0].UID if brains else None
+        return value
+
     for fieldname, value in request.items():
         if fieldname not in schema:
             continue
-        if schema[fieldname].type in ('reference'):
-            brains = []
-            if value:
-                brains = resolve_request_lookup(obj, request, fieldname)
-                if not brains:
-                    raise BadRequest("Can't resolve reference: %s" % fieldname)
-            if schema[fieldname].multiValued:
-                value = [b.UID for b in brains] if brains else []
-            else:
-                value = brains[0].UID if brains else None
+
+        # get the field
+        field = schema[fieldname]
+
+        # handle proxy fields
+        if field.type in ('proxy') and field.get_proxy(obj):
+            proxy = field.get_proxy(obj)
+            proxy_field = proxy.Schema()[fieldname]
+            # check if the proxied field is a reference field
+            # https://github.com/bikalims/bika.lims/issues/2245
+            if proxy_field.type in ("reference"):
+                value = resolve_uids(fieldname, value)
+
+        # handle reference fields
+        if field.type in ('reference'):
+            value = resolve_uids(fieldname, value)
+
+        # remember the value (resolved) value of the field
         fields[fieldname] = value
-    # Write fields.
+
+    # Write fields
     for fieldname, value in fields.items():
         field = schema[fieldname]
         fieldtype = field.getType()
