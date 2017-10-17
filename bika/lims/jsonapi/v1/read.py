@@ -20,6 +20,7 @@ from zope.component import getAdapters
 import re
 import App
 
+from AccessControl import Unauthorized
 
 def read(context, request):
     tag = AuthenticatorView(context, request).authenticator()
@@ -39,6 +40,14 @@ def read(context, request):
         raise ValueError("bad or missing catalog_name: " + catalog_name)
     catalog = getToolByName(context, catalog_name)
     indexes = catalog.indexes()
+
+    pm = getToolByName(context, 'portal_membership')
+    roles = pm.getAuthenticatedMember().getRoles()
+    if 'EMS' in roles:
+        if request['portal_type'] == 'Sample':
+            request['object_provides'] = 'ISharableSamples'
+        else:
+            raise Unauthorized("You don't have access permission to {}".format(request['portal_type']))
 
     contentFilter = {}
     for index in indexes:
@@ -149,3 +158,20 @@ class Read(object):
         """
 
         return read(context, request)
+
+
+
+'''
+<h3>form</h3>
+<table>
+<tr valign="top" align="left">
+<th>portal_type</th>
+<td>'Client'</td>
+</tr>
+</table>
+<tr valign="top" align="left">
+<th>AUTHENTICATED_USER</th>
+<td>&lt;PropertiedUser 'admin'&gt;</td>
+</tr>
+'''
+
