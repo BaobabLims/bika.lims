@@ -20,6 +20,7 @@ from zope.component import getAdapters
 import re
 import App
 
+from baobab.lims.interfaces import ISharableSample
 from AccessControl import Unauthorized
 
 def read(context, request):
@@ -45,7 +46,7 @@ def read(context, request):
     roles = pm.getAuthenticatedMember().getRoles()
     if 'EMS' in roles:
         if request['portal_type'] == 'Sample':
-            request['object_provides'] = 'ISharableSamples'
+            request['object_provides'] = ISharableSample.__identifier__
         else:
             raise Unauthorized("You don't have access permission to {}".format(request['portal_type']))
 
