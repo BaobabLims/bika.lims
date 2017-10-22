@@ -108,7 +108,6 @@ def generateUniqueId(context, parent=False):
             sampleDate = DT2dt(context.getSamplingDate())
 
         variables_map = {
-            'clientId': context.aq_parent.getClientID(),
             'sampleDate': sampleDate,
             'sampleType': context.getSampleType().getPrefix(),
             'year': DateTime().strftime("%Y")[2:],
