@@ -258,9 +258,9 @@ class BikaGenerator:
         mp = portal.clients.manage_permission
 
         # Allow authenticated users to see the contents of the client folder
-        mp(permissions.View, ['Authenticated'], 0)
-        mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
-        mp(permissions.ListFolderContents, ['Authenticated'], 0)
+        mp(permissions.View, ['Authenticated', 'EMS'], 0)
+        mp(permissions.AccessContentsInformation, ['Authenticated', 'EMS'], 0)
+        mp(permissions.ListFolderContents, ['Authenticated', 'EMS'], 0)
 
         # Set modify permissions
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)

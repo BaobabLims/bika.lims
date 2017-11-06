@@ -21,6 +21,8 @@ import re
 import App
 
 from baobab.lims.interfaces import ISharableSample
+from baobab.lims.interfaces import IProject
+from bika.lims.interfaces import IClient
 from AccessControl import Unauthorized
 
 def read(context, request):
@@ -48,7 +50,12 @@ def read(context, request):
         if request['portal_type'] == 'Sample':
             request['object_provides'] = ISharableSample.__identifier__
         else:
-            raise Unauthorized("You don't have access permission to {}".format(request['portal_type']))
+            if request['portal_type'] == 'Client':
+                request['object_provides'] = IClient.__identifier__
+            elif request['portal_type'] == 'Project':
+                request['object_provides'] = IProject.__identifier__
+            else:
+                raise Unauthorized("You don't have access permission to {}".format(request['portal_type']))
 
     contentFilter = {}
     for index in indexes:
