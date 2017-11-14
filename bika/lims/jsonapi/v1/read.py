@@ -50,12 +50,7 @@ def read(context, request):
         if request['portal_type'] == 'Sample':
             request['object_provides'] = ISharableSample.__identifier__
         else:
-            if request['portal_type'] == 'Client':
-                request['object_provides'] = IClient.__identifier__
-            elif request['portal_type'] == 'Project':
-                request['object_provides'] = IProject.__identifier__
-            else:
-                raise Unauthorized("You don't have access permission to {}".format(request['portal_type']))
+            raise Unauthorized("You don't have access permission to {}".format(request['portal_type']))
 
     contentFilter = {}
     for index in indexes:
