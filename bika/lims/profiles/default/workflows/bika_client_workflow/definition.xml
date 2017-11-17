@@ -42,6 +42,7 @@
       <permission-role>Preserver</permission-role>
       <permission-role>Owner</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>EMS</permission-role>
     </permission-map>
 
     <!-- Access contents information -->
@@ -54,6 +55,7 @@
       <permission-role>Preserver</permission-role>
       <permission-role>Owner</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>EMS</permission-role>
     </permission-map>
 
     <!-- List folder contents -->
@@ -66,6 +68,7 @@
       <permission-role>Preserver</permission-role>
       <permission-role>Owner</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>EMS</permission-role>
     </permission-map>
 
     <!-- BIKA: Edit Client
