@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
 import json
 import datetime
+import os
 
 from DateTime import DateTime
 from AccessControl import Unauthorized
@@ -28,6 +28,8 @@ from bika.lims.jsonapi.interfaces import IDataManager
 from bika.lims.jsonapi.interfaces import IFieldManager
 from bika.lims.jsonapi.interfaces import ICatalogQuery
 from bika.lims.utils.analysisrequest import create_analysisrequest as create_ar
+from baobab.lims.utils.create_biospecimen import create_sample as create_smp
+
 
 _marker = object()
 
@@ -1235,17 +1237,22 @@ def create_object(container, portal_type, **data):
             data = u.omit(data, "SampleType", "Analyses")
             # Set the container as the client, as the AR lives in it
             data["Client"] = container
+        elif portal_type == "Sample":
+            obj = create_sample(container, **data)
+            data = u.omit(data, "StorageLocation", "SampleType", "IgnoreWorkflow")
         # Standard content creation
         else:
             # we want just a minimun viable object and set the data later
             obj = api.create(container, portal_type)
             # obj = api.create(container, portal_type, **data)
+
     except Unauthorized:
         fail(401, "You are not allowed to create this content")
 
     # Update the object with the given data, but omit the id
     try:
-        update_object_with_data(obj, data)
+        if portal_type != "Sample":
+            update_object_with_data(obj, data)
     except APIError:
 
         # Failure in creation process, delete the invalid object
@@ -1279,6 +1286,67 @@ def create_analysisrequest(container, **data):
     }
 
     return create_ar(container, request, values)
+
+
+def create_sample(container, **data):
+    """
+    create a sample from here that doesnt go via api create
+    :param container:
+    :param data:
+    :return: Sample object
+    """
+    container = get_object(container)
+    request = req.get_request()
+    # we need to resolve the SampleType to a full object
+    sample_type = data.get("SampleType", None)
+    if sample_type is None:
+        fail(400, "Please provide a SampleType")
+
+    # TODO We should handle the same values as in the DataManager for this field
+    #      (UID, path, objects, dictionaries ...)
+    sample_type_results = search(portal_type="SampleType", title=sample_type)
+
+    # StorageLocation
+    storage_location = data.get("StorageLocation", None)
+    if storage_location is None:
+        fail(400, "Please provide a StorageLocation")
+
+    linked_sample_list = search(portal_type="Sample", Title=data.get('LinkedSample', ''))
+    linked_sample = linked_sample_list and linked_sample_list[0].getObject() or None
+
+    try:
+        volume = str(data.get('Volume'))
+        float_volume = float(volume)
+        if not float_volume:
+            fail(400, "Please provide a correct Volume")
+    except:
+        raise
+
+    # TODO We should handle the same values as in the DataManager for this field
+    #      (UID, path, objects, dictionaries ...)
+    storage_location_results = search(portal_type='StoragePosition', Title=storage_location)
+
+    # set the values and call the create function
+    values = {
+        "title": data.get('title', ''),
+        "description": data.get("description", ""),
+        "Project": container,     #because the container is in fact the project this sample belongs to.
+        "AllowSharing": data.get('AllowSharing', 0),
+        "StorageLocation": storage_location_results and get_object(storage_location_results[0]) or None,
+        "SampleType": sample_type_results and get_object(sample_type_results[0]) or None,
+        "SubjectID": data.get("SubjectID", ""),
+        "Barcode": data.get("Barcode", ""),
+        "Volume": volume,
+        "Unit": data.get("Unit", ""),
+        "LinkedSample": linked_sample,
+        "DateCreated": data.get("DateCreated", ""),
+    }
+
+    api_source = data.get('APISource', None)
+    if api_source:
+        values['APISource'] = api_source
+
+    return create_smp(container, request, values)
 
 
 def update_object_with_data(content, record):
