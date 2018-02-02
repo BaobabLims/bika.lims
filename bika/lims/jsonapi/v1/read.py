@@ -21,9 +21,8 @@ import re
 import App
 
 from baobab.lims.interfaces import ISharableSample
-from baobab.lims.interfaces import IProject
-from bika.lims.interfaces import IClient
 from AccessControl import Unauthorized
+
 
 def read(context, request):
     tag = AuthenticatorView(context, request).authenticator()

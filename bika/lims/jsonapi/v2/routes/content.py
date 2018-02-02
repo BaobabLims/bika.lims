@@ -24,7 +24,7 @@ def get(context, request, resource=None, uid=None):
     portal_type = api.resource_to_portal_type(resource)
     if portal_type is None:
         raise APIError(404, "Not Found")
-    return api.get_batched(portal_type=portal_type, uid=uid, endpoint="bika.lims.jsonapi.v2.get")
+    return api.get_batched(context, portal_type=portal_type, uid=uid, endpoint="bika.lims.jsonapi.v2.get")
 
 
 # http://werkzeug.pocoo.org/docs/0.11/routing/#builtin-converters
