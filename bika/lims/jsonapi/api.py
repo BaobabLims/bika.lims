@@ -29,6 +29,7 @@ from bika.lims.jsonapi.interfaces import IFieldManager
 from bika.lims.jsonapi.interfaces import ICatalogQuery
 from bika.lims.utils.analysisrequest import create_analysisrequest as create_ar
 from baobab.lims.utils.create_biospecimen import create_sample as create_smp
+from bika.lims.workflow import doActionFor
 
 
 _marker = object()
@@ -492,7 +493,7 @@ def fail(status, msg):
     raise APIError(status, "{}".format(msg))
 
 
-def search(**kw):
+def  search(**kw):
     """Search the catalog adapter
 
     :returns: Catalog search results
@@ -1372,6 +1373,10 @@ def update_object_with_data(content, record):
     if dm is None:
         fail(400, "Update for this object is not allowed")
 
+    if content.portal_type == 'Sample':
+        content = update_sample(content, record)
+        record = u.omit(record, "SampleType", "StorageLocation")
+
     # Iterate through record items
     for k, v in record.items():
         try:
@@ -1420,6 +1425,50 @@ def validate_object(brain_or_object, data):
         return obj.validate(data=data)
 
     return {}
+
+# TODO: MOVE TO BAOBAB (QUINTON)
+def update_sample(content, record):
+    """
+    Custom code for updating a sample because of special requirements for storage location and sample type.
+    :param content:  The sample object that has to be modified
+    :param record:  This object has a dictionary, items, that has the values that are to be changed.
+    :return: The updated sample object
+    """
+    # set and unset the storage locations
+    for k, v in record.items():
+        if k == 'StorageLocation':
+            storage_location_results = search(portal_type='StoragePosition', Title=v)
+            storage_location = storage_location_results and get_object(storage_location_results[0]) or None
+
+            wf_tool = get_tool("portal_workflow")
+            location_status = wf_tool.getStatusOf('bika_storageposition_workflow', storage_location)
+            if location_status and location_status.get("review_state", None) == "available":
+
+                current_location = content.getStorageLocation()
+                if current_location:
+                    doActionFor(current_location, 'liberate')
+
+                #assign the sample to the storage location
+                content.setStorageLocation(storage_location)
+                sample_status = wf_tool.getStatusOf('bika_sample_workflow', content)
+                
+                if sample_status and sample_status.get("review_state", None) == "sample_received":
+                    doActionFor(storage_location, 'occupy')
+                else:
+                    doActionFor(storage_location, 'reserve')
+
+        if k == 'SampleType':
+            sample_type_results = search(portal_type="SampleType", title=v)
+
+            sample_type = sample_type_results and get_object(sample_type_results[0]) or None
+
+            print(sample_type)
+
+            if isinstance(sample_type, tuple):
+                sample_type = sample_type[0]
+            content.setSampleType(sample_type)
+
+    return content
 
 
 def deactivate_object(brain_or_object):
