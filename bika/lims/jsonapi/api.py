@@ -1338,7 +1338,11 @@ def create_sample(container, **data):
 
     # TODO We should handle the same values as in the DataManager for this field
     #      (UID, path, objects, dictionaries ...)
-    storage_location_results = search(portal_type='StoragePosition', Title=storage_location)
+    #storage_location_results = search(portal_type='StoragePosition', Title=storage_location)
+    storage_location_results = search(portal_type='StoragePosition', uid=storage_location)
+    # print('------------------')
+    # print(storage_location)
+    # print(storage_location_results)
 
     # set the values and call the create function
     values = {
