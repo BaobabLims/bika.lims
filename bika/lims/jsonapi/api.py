@@ -1319,6 +1319,8 @@ def create_sample(container, **data):
     # TODO We should handle the same values as in the DataManager for this field
     #      (UID, path, objects, dictionaries ...)
     sample_type_results = search(portal_type="SampleType", title=sample_type)
+    if not sample_type_results:
+        sample_type_results = search(portal_type="SampleType", uid=sample_type)
 
     # StorageLocation
     storage_location = data.get("StorageLocation", None)
@@ -1338,11 +1340,9 @@ def create_sample(container, **data):
 
     # TODO We should handle the same values as in the DataManager for this field
     #      (UID, path, objects, dictionaries ...)
-    #storage_location_results = search(portal_type='StoragePosition', Title=storage_location)
-    storage_location_results = search(portal_type='StoragePosition', uid=storage_location)
-    # print('------------------')
-    # print(storage_location)
-    # print(storage_location_results)
+    storage_location_results = search(portal_type='StoragePosition', Title=storage_location)
+    if not storage_location_results:
+        storage_location_results = search(portal_type='StoragePosition', uid=storage_location)
 
     # set the values and call the create function
     values = {
@@ -1455,6 +1455,8 @@ def update_sample(content, record):
     for k, v in record.items():
         if k == 'StorageLocation':
             storage_location_results = search(portal_type='StoragePosition', Title=v)
+            if not storage_location_results:
+                storage_location_results = search(portal_type='StoragePosition', uid=v)
             storage_location = storage_location_results and get_object(storage_location_results[0]) or None
 
             wf_tool = get_tool("portal_workflow")
@@ -1476,10 +1478,10 @@ def update_sample(content, record):
 
         if k == 'SampleType':
             sample_type_results = search(portal_type="SampleType", title=v)
+            if not sample_type_results:
+                sample_type_results = search(portal_type="SampleType", uid=v)
 
             sample_type = sample_type_results and get_object(sample_type_results[0]) or None
-
-            print(sample_type)
 
             if isinstance(sample_type, tuple):
                 sample_type = sample_type[0]
