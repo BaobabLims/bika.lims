@@ -28,8 +28,6 @@ from bika.lims.jsonapi.interfaces import IDataManager
 from bika.lims.jsonapi.interfaces import IFieldManager
 from bika.lims.jsonapi.interfaces import ICatalogQuery
 from bika.lims.utils.analysisrequest import create_analysisrequest as create_ar
-from baobab.lims.utils.create_biospecimen import create_sample as create_smp
-from bika.lims.workflow import doActionFor
 
 
 from Products.CMFCore.utils import getToolByName
@@ -1251,9 +1249,6 @@ def create_object(container, portal_type, **data):
             data = u.omit(data, "SampleType", "Analyses")
             # Set the container as the client, as the AR lives in it
             data["Client"] = container
-        elif portal_type == "Sample":
-            obj = create_sample(container, **data)
-            data = u.omit(data, "StorageLocation", "SampleType", "IgnoreWorkflow")
         # Standard content creation
         else:
             # we want just a minimun viable object and set the data later
@@ -1265,8 +1260,7 @@ def create_object(container, portal_type, **data):
 
     # Update the object with the given data, but omit the id
     try:
-        if portal_type != "Sample":
-            update_object_with_data(obj, data)
+        update_object_with_data(obj, data)    #start point
     except APIError:
 
         # Failure in creation process, delete the invalid object
@@ -1302,71 +1296,6 @@ def create_analysisrequest(container, **data):
     return create_ar(container, request, values)
 
 
-def create_sample(container, **data):
-    """
-    create a sample from here that doesnt go via api create
-    :param container:
-    :param data:
-    :return: Sample object
-    """
-    container = get_object(container)
-    request = req.get_request()
-    # we need to resolve the SampleType to a full object
-    sample_type = data.get("SampleType", None)
-    if sample_type is None:
-        fail(400, "Please provide a SampleType")
-
-    # TODO We should handle the same values as in the DataManager for this field
-    #      (UID, path, objects, dictionaries ...)
-    sample_type_results = search(portal_type="SampleType", title=sample_type)
-    if not sample_type_results:
-        sample_type_results = search(portal_type="SampleType", uid=sample_type)
-
-    # StorageLocation
-    storage_location = data.get("StorageLocation", None)
-    if storage_location is None:
-        fail(400, "Please provide a StorageLocation")
-
-    linked_sample_list = search(portal_type="Sample", Title=data.get('LinkedSample', ''))
-    linked_sample = linked_sample_list and linked_sample_list[0].getObject() or None
-
-    try:
-        volume = str(data.get('Volume'))
-        float_volume = float(volume)
-        if not float_volume:
-            fail(400, "Please provide a correct Volume")
-    except:
-        raise
-
-    # TODO We should handle the same values as in the DataManager for this field
-    #      (UID, path, objects, dictionaries ...)
-    storage_location_results = search(portal_type='StoragePosition', Title=storage_location)
-    if not storage_location_results:
-        storage_location_results = search(portal_type='StoragePosition', uid=storage_location)
-
-    # set the values and call the create function
-    values = {
-        "title": data.get('title', ''),
-        "description": data.get("description", ""),
-        "Project": container,     #because the container is in fact the project this sample belongs to.
-        "AllowSharing": data.get('AllowSharing', 0),
-        "StorageLocation": storage_location_results and get_object(storage_location_results[0]) or None,
-        "SampleType": sample_type_results and get_object(sample_type_results[0]) or None,
-        "SubjectID": data.get("SubjectID", ""),
-        "Barcode": data.get("Barcode", ""),
-        "Volume": volume,
-        "Unit": data.get("Unit", ""),
-        "LinkedSample": linked_sample,
-        "DateCreated": data.get("DateCreated", ""),
-    }
-
-    api_source = data.get('APISource', None)
-    if api_source:
-        values['APISource'] = api_source
-
-    return create_smp(container, request, values)
-
-
 def update_object_with_data(content, record):
     """Update the content with the record data
 
@@ -1390,14 +1319,19 @@ def update_object_with_data(content, record):
     if dm is None:
         fail(400, "Update for this object is not allowed")
 
-    if content.portal_type == 'Sample':
-        content = update_sample(content, record)
-        record = u.omit(record, "SampleType", "StorageLocation")
+    print('------------')
+    print(dm)
+    print(content)
+    print(record)
 
     # Iterate through record items
+    print('=============')
     for k, v in record.items():
+        print('----------')
+        print(k)
+        print(v)
         try:
-            success = dm.set(k, v, **record)
+            success = dm.set(k, v, **record)       #starting point
         except Unauthorized:
             fail(401, "Not allowed to set the field '%s'" % k)
         except ValueError, exc:
@@ -1442,52 +1376,6 @@ def validate_object(brain_or_object, data):
         return obj.validate(data=data)
 
     return {}
-
-# TODO: MOVE TO BAOBAB (QUINTON)
-def update_sample(content, record):
-    """
-    Custom code for updating a sample because of special requirements for storage location and sample type.
-    :param content:  The sample object that has to be modified
-    :param record:  This object has a dictionary, items, that has the values that are to be changed.
-    :return: The updated sample object
-    """
-    # set and unset the storage locations
-    for k, v in record.items():
-        if k == 'StorageLocation':
-            storage_location_results = search(portal_type='StoragePosition', Title=v)
-            if not storage_location_results:
-                storage_location_results = search(portal_type='StoragePosition', uid=v)
-            storage_location = storage_location_results and get_object(storage_location_results[0]) or None
-
-            wf_tool = get_tool("portal_workflow")
-            location_status = wf_tool.getStatusOf('bika_storageposition_workflow', storage_location)
-            if location_status and location_status.get("review_state", None) == "available":
-
-                current_location = content.getStorageLocation()
-                if current_location:
-                    doActionFor(current_location, 'liberate')
-
-                #assign the sample to the storage location
-                content.setStorageLocation(storage_location)
-                sample_status = wf_tool.getStatusOf('bika_sample_workflow', content)
-                
-                if sample_status and sample_status.get("review_state", None) == "sample_received":
-                    doActionFor(storage_location, 'occupy')
-                else:
-                    doActionFor(storage_location, 'reserve')
-
-        if k == 'SampleType':
-            sample_type_results = search(portal_type="SampleType", title=v)
-            if not sample_type_results:
-                sample_type_results = search(portal_type="SampleType", uid=v)
-
-            sample_type = sample_type_results and get_object(sample_type_results[0]) or None
-
-            if isinstance(sample_type, tuple):
-                sample_type = sample_type[0]
-            content.setSampleType(sample_type)
-
-    return content
 
 
 def deactivate_object(brain_or_object):
