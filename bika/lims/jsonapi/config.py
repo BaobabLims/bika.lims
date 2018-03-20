@@ -227,6 +227,7 @@ ALLOWED_PORTAL_TYPES_TO_CREATE = [
 #    'Preservations',
     'Pricelist',
 #    'PricelistFolder',
+    'Project',
 #    'ReferenceAnalysis',
     'ReferenceDefinition',
 #    'ReferenceDefinitions',
