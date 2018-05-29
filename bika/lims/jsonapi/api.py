@@ -68,12 +68,14 @@ def get_batched(context, portal_type=None, uid=None, endpoint=None, **kw):
     # TODO: to move to baobab lims jsonapi -----
     pm = getToolByName(context, 'portal_membership')
     roles = pm.getAuthenticatedMember().getRoles()
-    if 'EMS' in roles:
+    if 'EMS' in roles or uid == "allowShare":
+        uid = None
         if portal_type == 'Sample':
             kw['object_provides'] = ISharableSample.__identifier__
             req.get_request().form["catalog"] = "portal_catalog"
         else:
             raise Unauthorized("You don't have access permission to {}".format(portal_type))
+
     # TODO: ------
     # fetch the catalog results
     results = get_search_results(portal_type=portal_type, uid=uid, **kw)
