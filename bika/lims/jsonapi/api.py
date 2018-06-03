@@ -68,7 +68,7 @@ def get_batched(context, portal_type=None, uid=None, endpoint=None, **kw):
     # TODO: to move to baobab lims jsonapi -----
     pm = getToolByName(context, 'portal_membership')
     roles = pm.getAuthenticatedMember().getRoles()
-    if 'EMS' in roles or uid == "allowShare":
+    if 'EMS' in roles or uid == "allowSharing":
         uid = None
         if portal_type == 'Sample':
             kw['object_provides'] = ISharableSample.__identifier__
