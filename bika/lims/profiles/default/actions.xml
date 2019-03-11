@@ -169,5 +169,17 @@
 			</property>
 			<property name="visible">True</property>
 		</object>
+		<object name="export" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Export</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/export</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="Export all data"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
 	</object>
 </object>
