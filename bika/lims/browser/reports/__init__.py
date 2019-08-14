@@ -272,7 +272,7 @@ class SubmitForm(BrowserView):
         else:
             module = "bika.lims.browser.reports.%s" % report_id
         try:
-            exec ("from %s import Report" % module)
+            exec("from %s import Report" % module)
             # required during error redirect: the report must have a copy of
             # additional_reports, because it is used as a surrogate view.
             Report.additional_reports = self.additional_reports
@@ -342,7 +342,7 @@ class ReferenceAnalysisQC_Samples(BrowserView):
             samples = self.bika_catalog(portal_type='ReferenceSample',
                                         path={"query": "/".join(
                                             supplier.getPhysicalPath()),
-                                              "level": 0})
+                                            "level": 0})
             ret = []
             for sample in samples:
                 sample = sample.getObject()
@@ -366,7 +366,7 @@ class ReferenceAnalysisQC_Services(BrowserView):
             analyses = self.bika_analysis_catalog(portal_type='ReferenceAnalysis',
                                                   path={"query": "/".join(
                                                       sample.getPhysicalPath()),
-                                                        "level": 0})
+                                                      "level": 0})
             ret = {}
             for analysis in analyses:
                 service = analysis.getObject().getService()

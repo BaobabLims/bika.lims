@@ -50,31 +50,22 @@ class Report(BrowserView):
             return self.default_template()
 
         datalines = []
-        analyses_count = 0
+        samples_count = 0
         for sample in samples:
             sample = sample.getObject()
-
-            # For each sample, retrieve the analyses and generate
-            # a data line for each one
-            analyses = sample.getAnalyses({})
-            for analysis in analyses:
-                analysis = analysis.getObject()
-                sd = sample.getSamplingDate()
-                dataline = {'AnalysisKeyword': analysis.getKeyword(),
-                            'AnalysisTitle': analysis.getServiceTitle(),
-                            'SampleID': sample.getSampleID(),
-                            'SampleType': sample.getSampleType().Title(),
-                            'SampleDateReceived': self.ulocalized_time(
-                                sample.getDateReceived(), long_format=1),
-                            'SampleSamplingDate': self.ulocalized_time(
-                                sd, long_format=1) if sd else ''
-                            }
-                datalines.append(dataline)
-                analyses_count += 1
-
+            sd = sample.getSamplingDate()
+            dataline = {'SampleID': sample.getSampleID(),
+                        'SampleType': sample.getSampleType().Title(),
+                        'SampleDateReceived': self.ulocalized_time(
+                            sample.getDateReceived(), long_format=1),
+                        'SampleSamplingDate': self.ulocalized_time(
+                            sd, long_format=1) if sd else ''
+                        }
+            datalines.append(dataline)
+            samples_count += 1
         # Footer total data
         footlines = []
-        footline = {'TotalCount': analyses_count}
+        footline = {'TotalCount': samples_count}
         footlines.append(footline)
 
         self.report_data = {
@@ -92,8 +83,6 @@ class Report(BrowserView):
                 'SampleType',
                 'SampleSamplingDate',
                 'SampleDateReceived',
-                'AnalysisTitle',
-                'AnalysisKeyword',
             ]
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, fieldnames=fieldnames)
