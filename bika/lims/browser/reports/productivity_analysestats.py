@@ -40,14 +40,16 @@ class Report(BrowserView):
         client_title = None
         if 'ClientUID' in self.request.form:
             client_uid = self.request.form['ClientUID']
-            query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
+            # list of projects of this client
+            query['getClientUID'] = [project.getObject().UID() for project in client.getProjects()]
             client_title = client.Title()
         else:
             client = logged_in_client(self.context)
             if client:
                 client_title = client.Title()
-                query['getClientUID'] = client.UID()
+                # list of projects of this client
+                query['getClientUID'] = [project.getObject().UID() for project in client.getProjects()]
         if client_title:
             parms.append(
                 {'title': _('Client'),
@@ -84,6 +86,8 @@ class Report(BrowserView):
         services = {}
 
         analyses = bc(query)
+        import pdb
+        pdb.set_trace()
         for a in analyses:
             analysis = a.getObject()
             service_uid = analysis.getServiceUID()

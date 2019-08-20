@@ -29,6 +29,7 @@ class Report(BrowserView):
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
+
         self.report_content = {}
         parm_lines = {}
         parms = []
@@ -41,14 +42,16 @@ class Report(BrowserView):
         client_title = None
         if 'ClientUID' in self.request.form:
             client_uid = self.request.form['ClientUID']
-            query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
+            # list of projects of this client
+            query['getClientUID'] = [project.getObject().UID() for project in client.getProjects()]
             client_title = client.Title()
         else:
             client = logged_in_client(self.context)
             if client:
                 client_title = client.Title()
-                query['getClientUID'] = client.UID()
+                # list of projects of this client
+                query['getClientUID'] = [project.getObject().UID() for project in client.getProjects()]
         if client_title:
             parms.append(
                 {'title': _('Client'),
@@ -104,6 +107,7 @@ class Report(BrowserView):
         for sampletype in sc(portal_type="SampleType",
                              sort_on='sortable_title'):
             query['getSampleTypeUID'] = sampletype.UID
+
             analyses = bac(query)
             count_analyses = len(analyses)
 
@@ -113,9 +117,7 @@ class Report(BrowserView):
             dataitem = {'value': count_analyses}
 
             dataline.append(dataitem)
-
             datalines.append(dataline)
-
             count_all += count_analyses
 
         # footer data

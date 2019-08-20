@@ -251,6 +251,14 @@ class Client(Organisation):
         vocabulary.catalog = 'bika_setup_catalog'
         return vocabulary(allow_blank=True, portal_type='ClientType')
 
+    security.declarePublic('getProjects')
+    def getProjects(self):
+        bc = getToolByName(self, 'bika_catalog')
+        path = '/'.join(self.getPhysicalPath())
+        q_projects = bc({'path': {'query': path, 'depth': 1, 'level': 0},
+                         'portal_type': 'Project',
+                         'sort_on': 'sortable_title'})
+        return [project for project in q_projects] if len(q_projects) > 0 else ''
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
