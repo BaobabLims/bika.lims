@@ -14,6 +14,9 @@ from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from bika.lims.utils import getUsers
+import DateTime
+import datetime
+import time
 
 
 class Report(BrowserView):
@@ -73,7 +76,7 @@ class Report(BrowserView):
                                               'SupplierContact',
                                               'Worksheet',
                                               'WorksheetTemplate'
-        )}
+                                              )}
 
         val = self.selection_macros.parse_daterange(self.request,
                                                     'getModificationDate',
@@ -90,7 +93,7 @@ class Report(BrowserView):
             user = self.request.form['User']
             userobj = mt.getMemberById(user)
             userfullname = userobj.getProperty('fullname') \
-                           if userobj else ''
+                if userobj else ''
             parms.append(
                 {'title': _('User'), 'value': ("%s (%s)" % (userfullname, user))})
 
@@ -115,7 +118,7 @@ class Report(BrowserView):
                 for action in workflow:
                     actiontitle = _('Created')
                     if not action['action'] or (
-                        action['action'] and action['action'] == 'create'):
+                            action['action'] and action['action'] == 'create'):
                         if workflowid == 'bika_inactive_workflow':
                             continue
                         actiontitle = _('Created')
@@ -133,12 +136,11 @@ class Report(BrowserView):
                                     'Workflow': _(workflowid),
                                     'Action': actiontitle,
                                     'ActionDate': action['time'],
-                                    'ActionDateStr': self.ulocalized_time(
-                                        action['time'], 1),
+                                    'ActionDateStr': action['time'].strftime('%Y-%m-%d %H:%M:%S') if isinstance(action['time'], DateTime.DateTime) else datetime.datetime.fromtimestamp(action['time']).strftime('%Y-%m-%d %H:%M:%S'),
                                     'ActionActor': action['actor'],
                                     'ActionActorFullName': actorfullname,
                                     'ActionComments': action['comments']
-                        }
+                                    }
                         tmpdatalines[action['time']] = dataline
 
             # History versioning retrieval
@@ -159,11 +161,11 @@ class Report(BrowserView):
                                     'Workflow': '',
                                     'Action': metatitle,
                                     'ActionDate': meta['timestamp'],
-                                    'ActionDateStr': meta['timestamp'],
+                                    'ActionDateStr': meta['timestamp'].strftime('%Y-%m-%d %H:%M:%S') if isinstance(meta['timestamp'], DateTime.DateTime) else datetime.datetime.fromtimestamp(meta['timestamp']).strftime('%Y-%m-%d %H:%M:%S'),
                                     'ActionActor': meta['principal'],
                                     'ActionActorFullName': actorfullname,
                                     'ActionComments': ''
-                        }
+                                    }
                         tmpdatalines[meta['timestamp']] = dataline
         if len(tmpdatalines) == 0:
             message = _(
@@ -184,4 +186,3 @@ class Report(BrowserView):
 
             return {'report_title': _('Users history'),
                     'report_data': self.template()}
-
