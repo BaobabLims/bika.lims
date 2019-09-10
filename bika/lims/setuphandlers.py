@@ -535,35 +535,6 @@ class BikaGenerator:
         addColumn(bac, 'getResultCaptureDate')
         addColumn(bac, 'Priority')
 
-        ## Needs to be added a columns
-
-        #addColumn(bac, 'worksheetanalysis_review_state')
-        #addColumn(bac, 'getDepartmentUID')
-        #addColumn(bac, 'getDueDate')
-        #addColumn(bac, 'getDateSampled')
-        #addColumn(bac, 'getDateReceived')
-        #addColumn(bac, 'getResultCaptureDate')
-        #addColumn(bac, 'getDateAnalysisPublished')
-        #addColumn(bac, 'getClientUID')
-        #addColumn(bac, 'getAnalyst')
-        # addColumn(bac, 'getClientTitle')
-        # addColumn(bac, 'getRequestID')
-        # addColumn(bac, 'getClientOrderNumber')
-        # #addColumn(bac, 'getKeyword')
-        # addColumn(bac, 'getServiceTitle')
-        #addColumn(bac, 'getServiceUID')
-        # addColumn(bac, 'getCategoryUID')
-        # addColumn(bac, 'getCategoryTitle')
-        # addColumn(bac, 'getPointOfCapture')
-        #addColumn(bac, 'getDateReceived')
-        # addColumn(bac, 'getResultCaptureDate')
-        #addColumn(bac, 'getSampleTypeUID')
-        # addColumn(bac, 'getSamplePointUID')
-        # addColumn(bac, 'getRawSamplePoints')
-        # addColumn(bac, 'getRawSampleTypes')
-        # addColumn(bac, 'getRetested')
-        # addColumn(bac, 'getReferenceAnalysesGroupID')
-
         # bika_catalog
 
         bc = getToolByName(portal, 'bika_catalog', None)
