@@ -42,7 +42,8 @@ class Report(BrowserView):
                                                     'getDateReceived',
                                                     _('Date Received'))
         if val:
-            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            self.contentFilter[val['contentFilter']
+                               [0]] = val['contentFilter'][1]
             parms.append(val['parms'])
             titles.append(val['titles'])
 
@@ -78,20 +79,22 @@ class Report(BrowserView):
             if (monthyear in datalines):
                 received = datalines[monthyear]['ReceivedCount'] + 1
                 publishedcnt = published and datalines[monthyear][
-                                                 'PublishedCount'] + 1 or \
-                               datalines[monthyear]['PublishedCount']
+                    'PublishedCount'] + 1 or \
+                    datalines[monthyear]['PublishedCount']
             ratio = publishedcnt / received
+            #import pdb
+            # pdb.set_trace()
             dataline = {'MonthYear': monthyear,
                         'ReceivedCount': received,
                         'PublishedCount': publishedcnt,
                         'UnpublishedCount': received - publishedcnt,
                         'Ratio': ratio,
-                        'RatioPercentage': '%02d' % (
-                        100 * (float(publishedcnt) / float(received))) + '%'}
+                        'RatioPercentage': '%s' % (100 * round((float(publishedcnt) / float(received)), 4)) + '%'}
             datalines[monthyear] = dataline
 
             total_received_count += 1
-            total_published_count = published and total_published_count + 1 or total_published_count
+            total_published_count = published and total_published_count + \
+                1 or total_published_count
 
         # Footer total data
         ratio = total_published_count / total_received_count
@@ -99,10 +102,8 @@ class Report(BrowserView):
                     'PublishedCount': total_published_count,
                     'UnpublishedCount': total_received_count - total_published_count,
                     'Ratio': ratio,
-                    'RatioPercentage': '%02d' % (100 * (
-                    float(total_published_count) / float(
-                        total_received_count))) + '%'
-        }
+                    'RatioPercentage': '%s' % (100 * round((float(total_published_count) / float(total_received_count)), 4)) + '%'
+                    }
         footlines['Total'] = footline
 
         self.report_data = {
