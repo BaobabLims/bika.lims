@@ -86,8 +86,6 @@ class Report(BrowserView):
         services = {}
 
         analyses = bc(query)
-        import pdb
-        pdb.set_trace()
         for a in analyses:
             analysis = a.getObject()
             service_uid = analysis.getServiceUID()
