@@ -71,7 +71,6 @@ class Report(BrowserView):
                    'col_heads': [_('Client'), \
                                  _('Request'), \
                                  _('Sample type'), \
-                                 _('Sample point'), \
                                  _('Published'), \
                                  _('Amount'), \
                        ],
@@ -99,9 +98,6 @@ class Report(BrowserView):
             dataitem = {'value': ar.getSampleTypeTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': ar.getSamplePointTitle()}
-            dataline.append(dataitem)
-
             dataitem = {'value':
                         self.ulocalized_time(getTransitionDate(ar, 'publish'),
                                              long_format=True)}
@@ -118,7 +114,7 @@ class Report(BrowserView):
         footlines = []
         footline = []
         footitem = {'value': _('Number of analyses retested for period'),
-                    'colspan': 5,
+                    'colspan': 4,
                     'class': 'total_label'}
         footline.append(footitem)
         footitem = {'value': count_all}
