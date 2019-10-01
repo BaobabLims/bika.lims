@@ -37,6 +37,7 @@
                                 </span>
                             </p>
 
+                            <!--
                             <p tal:condition="not: view/isSamplePointHidden|nothing">
                                 <a href="#" id="resultspersamplepoint_selector" i18n:translate="">Results per sample point</a>
                                 <br/>
@@ -52,6 +53,7 @@
             Reference analysis quality control graphs
                                 </span>
                             </p>
+                            -->
 
                         </fieldset>
                     </td>
@@ -89,6 +91,7 @@
                             </form>
                         </div>
 
+                        <!--
                         <div id="resultspersamplepoint" style="display:none" class="criteria">
                             <form action="createreport" method="post" name="qualitycontrol_resultspersamplepoint">
                                 <input type="hidden" name="report_id" value="qualitycontrol_resultspersamplepoint"/>
@@ -122,6 +125,8 @@
                                 <input tabindex="" class="searchButton" type="submit" name="submit" value="Generate report" i18n:attributes="value"/>
                             </form>
                         </div>
+                        -->
+
                     </td>
                 </tr>
             </table>
