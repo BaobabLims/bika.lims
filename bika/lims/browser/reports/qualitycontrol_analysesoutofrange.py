@@ -188,6 +188,8 @@ class Report(BrowserView):
             if isAttributeHidden('Sample', 'SamplePoint'):
                 dataitem = {'value': analysis.aq_parent.getSamplePointTitle()}
                 dataline.append(dataitem)
+            else:
+                dataline.append({'value': None})
 
             dataitem = {'value': analysis.getCategoryTitle()}
             dataline.append(dataitem)

@@ -107,7 +107,7 @@ class Report(BrowserView):
             if datekey not in periods:
                 periods[datekey] = {'count': 0,
                                     'duration': 0,
-                }
+                                    }
             count = periods[datekey]['count']
             duration = periods[datekey]['duration']
             count += 1
@@ -128,10 +128,10 @@ class Report(BrowserView):
         # and now lets do the actual report lines
         formats = {'columns': 2,
                    'col_heads': [_('Date'),
-                                 _('Turnaround time (h)'),
-                   ],
+                                 _('Turnaround time'),
+                                 ],
                    'class': '',
-        }
+                   }
 
         datalines = []
 
@@ -180,7 +180,7 @@ class Report(BrowserView):
 
             fieldnames = [
                 'Date',
-                'Turnaround time (h)',
+                'Turnaround time',
             ]
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
@@ -189,7 +189,7 @@ class Report(BrowserView):
             for row in datalines:
                 dw.writerow({
                     'Date': row[0]['value'],
-                    'Turnaround time (h)': row[1]['value'],
+                    'Turnaround time': row[1]['value'],
                 })
             report_data = output.getvalue()
             output.close()
