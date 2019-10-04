@@ -39,7 +39,7 @@ class Report(BrowserView):
 
         if 'ServiceUID' in self.request.form:
             service_uid = self.request.form['ServiceUID']
-            query['ServiceUID'] = service_uid
+            query['getServiceUID'] = service_uid
             service = rc.lookupObject(service_uid)
             service_title = service.Title()
             parms.append(
@@ -165,6 +165,9 @@ class Report(BrowserView):
         footline.append({'value': ave_total_duration,
                          'class': 'total number'})
         footlines.append(footline)
+
+        # import pdb
+        # pdb.set_trace()
 
         self.report_content = {
             'headings': headings,
