@@ -134,16 +134,13 @@ class Report(BrowserView):
                 avemins = mins_late / count_late
                 services[service_uid]['ave_late'] = formatDuration(self.context,
                                                                    avemins)
-
         # and now lets do the actual report lines
         formats = {'columns': 7,
                    'col_heads': [_('Analysis'),
                                  _('Count'),
                                  _('Undefined'),
                                  _('Late'),
-                                 _('Average late'),
-                                 _('Early'),
-                                 _('Average early'),
+                                 _('Early')
                    ],
                    'class': '',
         }
@@ -197,13 +194,8 @@ class Report(BrowserView):
                      'class': 'number'})
                 dataline.append({'value': services[service.UID]['count_late'],
                                  'class': 'number'})
-                dataline.append({'value': services[service.UID]['ave_late'],
-                                 'class': 'number'})
                 dataline.append({'value': services[service.UID]['count_early'],
                                  'class': 'number'})
-                dataline.append({'value': services[service.UID]['ave_early'],
-                                 'class': 'number'})
-
                 datalines.append(dataline)
 
             # category totals
@@ -265,23 +257,8 @@ class Report(BrowserView):
         footline.append({'value': total_count_late,
                          'class': 'total number'})
 
-        if total_count_late:
-            ave_mins = total_mins_late / total_count_late
-            footline.append({'value': formatDuration(self.context, ave_mins),
-                             'class': 'total number'})
-        else:
-            footline.append({'value': ''})
-
         footline.append({'value': total_count_early,
                          'class': 'total number'})
-
-        if total_count_early:
-            ave_mins = total_mins_early / total_count_early
-            footline.append({'value': formatDuration(self.context, ave_mins),
-                             'class': 'total number'})
-        else:
-            footline.append({'value': '',
-                             'class': 'total number'})
 
         footlines.append(footline)
 
@@ -302,9 +279,7 @@ class Report(BrowserView):
                 'Count',
                 'Undefined',
                 'Late',
-                'Average late',
-                'Early',
-                'Average early',
+                'Early'
             ]
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
@@ -319,9 +294,7 @@ class Report(BrowserView):
                     'Count': row[1]['value'],
                     'Undefined': row[2]['value'],
                     'Late': row[3]['value'],
-                    'Average late': row[4]['value'],
-                    'Early': row[5]['value'],
-                    'Average early': row[6]['value'],
+                    'Early': row[5]['value']
                 })
             report_data = output.getvalue()
             output.close()
