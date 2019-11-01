@@ -126,6 +126,7 @@ class Report(BrowserView):
 
             query['portal_type'] = 'Analysis'
             analyses = bac(query)
+
             count_analyses = len(analyses)
             dataitem = {'value': count_analyses}
             dataline.append(dataitem)

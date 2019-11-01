@@ -86,6 +86,7 @@ class Report(BrowserView):
         services = {}
 
         analyses = bc(query)
+
         for a in analyses:
             analysis = a.getObject()
             service_uid = analysis.getServiceUID()
@@ -97,14 +98,15 @@ class Report(BrowserView):
                                          'count_undefined': 0,
                 }
             earliness = analysis.getEarliness()
-            if earliness < 0:
+
+            if earliness > 0:
                 count_late = services[service_uid]['count_late']
                 mins_late = services[service_uid]['mins_late']
                 count_late += 1
                 mins_late -= earliness
                 services[service_uid]['count_late'] = count_late
                 services[service_uid]['mins_late'] = mins_late
-            if earliness > 0:
+            if earliness < 0:
                 count_early = services[service_uid]['count_early']
                 mins_early = services[service_uid]['mins_early']
                 count_early += 1
@@ -139,8 +141,8 @@ class Report(BrowserView):
                    'col_heads': [_('Analysis'),
                                  _('Count'),
                                  _('Undefined'),
-                                 _('Late'),
-                                 _('Early')
+                                 _('Early'),
+                                 _('Late')
                    ],
                    'class': '',
         }
@@ -192,9 +194,9 @@ class Report(BrowserView):
                 dataline.append(
                     {'value': services[service.UID]['count_undefined'],
                      'class': 'number'})
-                dataline.append({'value': services[service.UID]['count_late'],
-                                 'class': 'number'})
                 dataline.append({'value': services[service.UID]['count_early'],
+                                 'class': 'number'})
+                dataline.append({'value': services[service.UID]['count_late'],
                                  'class': 'number'})
                 datalines.append(dataline)
 
@@ -254,11 +256,12 @@ class Report(BrowserView):
         footline.append({'value': total_count_undefined,
                          'class': 'total number'})
 
+        footline.append({'value': total_count_early,
+                         'class': 'total number'})
+
         footline.append({'value': total_count_late,
                          'class': 'total number'})
 
-        footline.append({'value': total_count_early,
-                         'class': 'total number'})
 
         footlines.append(footline)
 

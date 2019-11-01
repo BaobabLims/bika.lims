@@ -2958,5 +2958,4 @@ class AnalysisRequest(BaseFolder):
             # Notify the Client about the Rejection.
             notify_rejection(self)
 
-
 registerType(AnalysisRequest, PROJECTNAME)

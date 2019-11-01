@@ -56,7 +56,7 @@ def ObjectInitializedEventHandler(instance, event):
         wf_tool.doActionFor(ar, 'unassign')
         skip(ar, 'unassign', unskip=True)
 
-    instance.updateDueDate()
+    instance.updateDueDate(ar)
 
     return
 
