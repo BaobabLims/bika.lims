@@ -111,7 +111,8 @@ class Report(BrowserView):
             count = periods[datekey]['count']
             duration = periods[datekey]['duration']
             count += 1
-            duration += analysis.getDuration()
+            #Duration is stored in seconds - converted to hours
+            duration += analysis.getDuration() / 60 / 60
             periods[datekey]['duration'] = duration
             periods[datekey]['count'] = count
             total_count += 1
@@ -165,9 +166,6 @@ class Report(BrowserView):
         footline.append({'value': ave_total_duration,
                          'class': 'total number'})
         footlines.append(footline)
-
-        # import pdb
-        # pdb.set_trace()
 
         self.report_content = {
             'headings': headings,

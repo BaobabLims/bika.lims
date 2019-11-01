@@ -377,7 +377,7 @@ class Analysis(BaseContent):
             s = ''
         return safe_unicode(s).encode('utf-8')
 
-    def updateDueDate(self):
+    def updateDueDate(self, ar=None):
         # set the max hours allowed
 
         service = self.getService()
@@ -387,18 +387,24 @@ class Analysis(BaseContent):
         self.setMaxTimeAllowed(maxtime)
         # set the due date
         # default to old calc in case no calendars
+
         max_days = float(maxtime.get('days', 0)) + \
             ((float(maxtime.get('hours', 0)) * 3600 +
               float(maxtime.get('minutes', 0)) * 60) / 86400)
 
-        part = self.getSamplePartition()
-        if part:
-            starttime = part.getDateReceived()
-            if starttime:
-                duetime = starttime + max_days
-            else:
-                duetime = ''
-            self.setDueDate(duetime)
+        starttime = DateTime()
+        if not ar:
+            if self.getSamplePartition():
+                starttime = self.getSamplePartition().getDateReceived()
+        else:
+            if ar.getDateCreated():
+                starttime = ar.getDateCreated()
+
+        if starttime:
+            duetime = starttime + max_days
+        else:
+            duetime = ''
+        self.setDueDate(duetime)
 
     def getReviewState(self):
         """ Return the current analysis' state"""
@@ -1557,21 +1563,24 @@ class Analysis(BaseContent):
             return
         endtime = DateTime()
         self.setDateAnalysisPublished(endtime)
+
         starttime = self.aq_parent.getDateReceived()
         starttime = starttime or self.created()
+
         service = self.getService()
         maxtime = service.getMaxTimeAllowed()
         # set the instance duration value to default values
         # in case of no calendars or max hours
         if maxtime:
-            duration = (endtime - starttime) * 24 * 60
-            maxtime_delta = int(maxtime.get("hours", 0)) * 86400
+            duration = int(endtime) - int(starttime)
+            maxtime_delta = int(maxtime.get("days", 0)) * 86400
             maxtime_delta += int(maxtime.get("hours", 0)) * 3600
             maxtime_delta += int(maxtime.get("minutes", 0)) * 60
             earliness = duration - maxtime_delta
         else:
             earliness = 0
             duration = 0
+
         self.setDuration(duration)
         self.setEarliness(earliness)
         self.reindexObject()

@@ -183,7 +183,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
                     ar_state = workflow.getInfoFor(ar, 'review_state')
                 # Then we need to forward new analyses state
-                analysis.updateDueDate()
+                analysis.updateDueDate(ar)
+
                 changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
         message = PMF("Changes saved.")

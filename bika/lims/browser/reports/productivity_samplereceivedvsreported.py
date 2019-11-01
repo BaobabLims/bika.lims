@@ -82,8 +82,6 @@ class Report(BrowserView):
                     'PublishedCount'] + 1 or \
                     datalines[monthyear]['PublishedCount']
             ratio = publishedcnt / received
-            #import pdb
-            # pdb.set_trace()
             dataline = {'MonthYear': monthyear,
                         'ReceivedCount': received,
                         'PublishedCount': publishedcnt,

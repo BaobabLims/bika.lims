@@ -87,11 +87,10 @@ class Report(BrowserView):
 
 
         # and now lets do the actual report lines
-        formats = {'columns': 8,
+        formats = {'columns': 7,
                    'col_heads': [_('Client'),
                                  _('Request'),
                                  _('Sample type'),
-                                 _('Sample point'),
                                  _('Category'),
                                  _('Analysis'),
                                  _('Received'),
@@ -103,7 +102,6 @@ class Report(BrowserView):
         datalines = []
         clients = {}
         sampletypes = {}
-        samplepoints = {}
         categories = {}
         services = {}
 
@@ -121,15 +119,11 @@ class Report(BrowserView):
             dataitem = {'value': analysis.aq_parent.getSampleTypeTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': analysis.aq_parent.getSamplePointTitle()}
-            dataline.append(dataitem)
-
             dataitem = {'value': analysis.getCategoryTitle()}
             dataline.append(dataitem)
 
             dataitem = {'value': analysis.getServiceTitle()}
             dataline.append(dataitem)
-
             dataitem = {'value': self.ulocalized_time(analysis.getDateReceived())}
             dataline.append(dataitem)
 
@@ -147,7 +141,7 @@ class Report(BrowserView):
         footlines = []
         footline = []
         footitem = {'value': _('Number of analyses retested for period'),
-                    'colspan': 7,
+                    'colspan': 6,
                     'class': 'total_label'}
         footline.append(footitem)
         footitem = {'value': count_all}

@@ -60,7 +60,7 @@ def doActionFor(instance, action_id):
         except WorkflowException as e:
             message = str(e)
             logger.warn("Failed to perform transition {} on {}: {}".format(
-                action_id, instance, message))
+            action_id, instance, message))
     return actionperformed, message
 
 
