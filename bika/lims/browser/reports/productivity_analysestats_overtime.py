@@ -13,7 +13,8 @@ from bika.lims.utils import t
 from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-
+from Products.ATContentTypes.utils import DT2dt, dt2DT
+import DateTime
 
 class Report(BrowserView):
     implements(IViewView)
@@ -84,88 +85,53 @@ class Report(BrowserView):
 
         # query all the analyses and increment the counts
 
-        periods = {}
-        total_count = 0
-        total_duration = 0
+        analysis_list = []
 
         analyses = bc(query)
         for a in analyses:
             analysis = a.getObject()
-            received = analysis.created()
-            if period == 'Day':
-                datekey = received.strftime('%d %b %Y')
-            elif period == 'Week':
-                # key period on Monday
-                dayofweek = received.strftime('%w')  # Sunday = 0
-                if dayofweek == 0:
-                    firstday = received - 6
-                else:
-                    firstday = received - (int(dayofweek) - 1)
-                datekey = firstday.strftime(self.date_format_short)
-            elif period == 'Month':
-                datekey = received.strftime('%m-%d')
-            if datekey not in periods:
-                periods[datekey] = {'count': 0,
-                                    'duration': 0,
-                                    }
-            count = periods[datekey]['count']
-            duration = periods[datekey]['duration']
-            count += 1
-            #Duration is stored in seconds - converted to hours
-            duration += analysis.getDuration() / 60 / 60
-            periods[datekey]['duration'] = duration
-            periods[datekey]['count'] = count
-            total_count += 1
-            total_duration += duration
-
-        # calculate averages
-        for datekey in periods.keys():
-            count = periods[datekey]['count']
-            duration = periods[datekey]['duration']
-            ave_duration = (duration) / count
-            periods[datekey]['duration'] = \
-                formatDuration(self.context, ave_duration)
+            analysis_list.append(
+                {'analysis_id': analysis.id,
+                 'duration': formatDuration(self.context, analysis.getDuration()),
+                 'overtime': formatDuration(self.context, \
+                                            int(round((DT2dt(DateTime.DateTime(analysis.getDueDate())) - \
+                                                       DT2dt(DateTime.DateTime(analysis.getDateAnalysisPublished())))\
+                                                      .total_seconds() / 60)))
+                 }
+            )
 
         # and now lets do the actual report lines
-        formats = {'columns': 2,
-                   'col_heads': [_('Date'),
-                                 _('Turnaround time'),
+        formats = {'columns': 3,
+                   'col_heads': [_('Analysis'),
+                                 _('Duration'),
+                                 _('Overtime'),
                                  ],
-                   'class': '',
-                   }
+                   'class': ''}
 
         datalines = []
 
-        period_keys = periods.keys()
-        for period in period_keys:
-            dataline = [{'value': period,
-                         'class': ''}, ]
-            dataline.append({'value': periods[period]['duration'],
+
+        for al in analysis_list:
+            dataline = [{'value': al['analysis_id'],
+                        'class': ''}]
+            dataline.append({'value': al['duration'],
+                             'class': 'number'})
+            dataline.append({'value': al['overtime'],
                              'class': 'number'})
             datalines.append(dataline)
 
-        if total_count > 0:
-            ave_total_duration = total_duration / total_count
-        else:
-            ave_total_duration = 0
-        ave_total_duration = formatDuration(self.context, ave_total_duration)
 
         # footer data
         footlines = []
         footline = []
-        footline = [{'value': _('Total data points'),
+        footline = [{'value': _('Total number of analysis'),
                      'class': 'total'}, ]
 
-        footline.append({'value': total_count,
+        footline.append({'value': len(analysis_list),
+                         'colspan': 2,
                          'class': 'total number'})
         footlines.append(footline)
 
-        footline = [{'value': _('Average TAT'),
-                     'class': 'total'}, ]
-
-        footline.append({'value': ave_total_duration,
-                         'class': 'total number'})
-        footlines.append(footline)
 
         self.report_content = {
             'headings': headings,
@@ -180,8 +146,9 @@ class Report(BrowserView):
             import datetime
 
             fieldnames = [
-                'Date',
-                'Turnaround time',
+                'Analysis',
+                'Duration',
+                'Overtime',
             ]
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
@@ -189,8 +156,9 @@ class Report(BrowserView):
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 dw.writerow({
-                    'Date': row[0]['value'],
-                    'Turnaround time': row[1]['value'],
+                    'Analysis': row[0]['value'],
+                    'Duration': row[1]['value'],
+                    'Overtime': row[2]['value'],
                 })
             report_data = output.getvalue()
             output.close()
@@ -198,8 +166,9 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                      "attachment;filename=\"analysesperservice_%s.csv\"" % date)
+                      "attachment;filename=\"analysestats_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': t(headings['header']),
                     'report_data': self.template()}
+
