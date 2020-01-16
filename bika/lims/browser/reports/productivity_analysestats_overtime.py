@@ -86,17 +86,17 @@ class Report(BrowserView):
         # query all the analyses and increment the counts
 
         analysis_list = []
-
         analyses = bc(query)
+
+        import datetime
         for a in analyses:
             analysis = a.getObject()
             analysis_list.append(
                 {'analysis_id': analysis.id,
-                 'duration': formatDuration(self.context, analysis.getDuration()),
-                 'overtime': formatDuration(self.context, \
-                                            int(round((DT2dt(DateTime.DateTime(analysis.getDueDate())) - \
-                                                       DT2dt(DateTime.DateTime(analysis.getDateAnalysisPublished())))\
-                                                      .total_seconds() / 60)))
+                 'duration': str(datetime.timedelta(seconds=analysis.getDuration())),
+                 'overtime': self.formatOvertime(int(round((DT2dt(DateTime.DateTime(analysis.getDueDate())) - \
+                       DT2dt(DateTime.DateTime(analysis.getDateAnalysisPublished()))) \
+                      .total_seconds())))
                  }
             )
 
@@ -109,7 +109,6 @@ class Report(BrowserView):
                    'class': ''}
 
         datalines = []
-
 
         for al in analysis_list:
             dataline = [{'value': al['analysis_id'],
@@ -171,4 +170,12 @@ class Report(BrowserView):
         else:
             return {'report_title': t(headings['header']),
                     'report_data': self.template()}
+
+    def formatOvertime(self, overtime):
+        import datetime
+
+        if overtime > 0:
+            return "-" + str(datetime.timedelta(seconds=overtime))
+        else:
+            return str(datetime.timedelta(seconds=abs(overtime)))
 
