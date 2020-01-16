@@ -1580,7 +1580,6 @@ class Analysis(BaseContent):
         else:
             earliness = 0
             duration = 0
-
         self.setDuration(duration)
         self.setEarliness(earliness)
         self.reindexObject()
