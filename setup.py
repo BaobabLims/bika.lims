@@ -12,18 +12,19 @@ version = '3.3.0'
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read() + "\n"
 
+
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=read("README.rst") + \
-                       read("docs/INSTALL.rst") + \
-                       read("docs/CHANGELOG.txt") + \
-                       "\n\n" + \
-                       "Authors and maintainers\n" + \
-                       "-----------------------\n" + \
-                       "- Bika Lab Systems, http://bikalabs.com\n" + \
-                       "- Naralabs, http://naralabs.com\n" + \
-                       "- RIDING BYTES, http://ridingbytes.com",
+      long_description=read("README.rst") +
+      read("docs/INSTALL.rst") +
+      read("docs/CHANGELOG.txt") +
+      "\n\n" +
+      "Authors and maintainers\n" +
+      "-----------------------\n" +
+      "- Bika Lab Systems, http://bikalabs.com\n" +
+      "- Naralabs, http://naralabs.com\n" +
+      "- RIDING BYTES, http://ridingbytes.com",
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
@@ -55,7 +56,7 @@ setup(name='bika.lims',
           'gpw',
           'jarn.jsi18n==0.3',
           'magnitude',
-          'openpyxl',
+          'openpyxl==2.6.4',
           'plone.api',
           'plone.app.dexterity',
           'plone.app.iterate',
@@ -64,7 +65,7 @@ setup(name='bika.lims',
           'plone.app.z3cform',
           'plone.jsonapi.core',
           'plone.resource',
-          'Products.AdvancedQuery',
+          'Products.AdvancedQuery<=4',
           'Products.ATExtensions>=1.1a3',
           'Products.CMFEditions',
           'Products.DataGridField',
@@ -91,4 +92,4 @@ setup(name='bika.lims',
       [z3c.autoinclude.plugin]
       target = plone
       """,
-)
+      )
