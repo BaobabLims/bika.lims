@@ -23,26 +23,25 @@ from bika.lims.interfaces import ISampleType
 from magnitude import mg, MagnitudeError
 from zope.interface import implements
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
-import json
-import plone
-import sys
 
 schema = BikaSchema.copy() + Schema((
-    DurationField('RetentionPeriod',
-        required = 1,
-        default_method = 'getDefaultLifetime',
-        widget = DurationWidget(
+    DurationField(
+        'RetentionPeriod',
+        required=1,
+        default_method='getDefaultLifetime',
+        widget=DurationWidget(
             label=_("Retention Period"),
-            description =_(
+            description=_(
                 "The period for which un-preserved samples of this type can be kept before "
-                "they expire and cannot be analysed any further"),
+                "they expire and cannot be analysed any further."),
         )
     ),
-    BooleanField('Hazardous',
-        default = False,
-        widget = BooleanWidget(
+    BooleanField(
+        'Hazardous',
+        default=False,
+        widget=BooleanWidget(
             label=_("Hazardous"),
-            description=_("Samples of this type should be treated as hazardous"),
+            description=_("Samples of this type should be treated as hazardous."),
         ),
     ),
     ReferenceField('SampleMatrix',
@@ -62,37 +61,40 @@ schema = BikaSchema.copy() + Schema((
             label=_("Sample Type Prefix"),
         ),
     ),
-    StringField('MinimumVolume',
-        required = 1,
-        widget = StringWidget(
+    StringField(
+        'MinimumVolume',
+        required=1,
+        widget=StringWidget(
             label=_("Minimum Volume"),
             description=_("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
         ),
     ),
-    ReferenceField('ContainerType',
-        required = 0,
-        allowed_types = ('ContainerType',),
-        vocabulary = 'ContainerTypesVocabulary',
-        relationship = 'SampleTypeContainerType',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    ReferenceField(
+        'ContainerType',
+        required=0,
+        allowed_types=('ContainerType',),
+        vocabulary='ContainerTypesVocabulary',
+        relationship='SampleTypeContainerType',
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Default Container Type"),
-            description =_(
+            description=_(
                 "The default container type. New sample partitions "
                 "are automatically assigned a container of this "
                 "type, unless it has been specified in more details "
-                "per analysis service"),
+                "per analysis service."),
         ),
     ),
-    ReferenceField('SamplePoints',
-        required = 0,
-        multiValued = 1,
-        allowed_types = ('SamplePoint',),
-        vocabulary = 'SamplePointsVocabulary',
-        relationship = 'SampleTypeSamplePoint',
-        widget = brw(
+    ReferenceField(
+        'SamplePoints',
+        required=0,
+        multiValued=1,
+        allowed_types=('SamplePoint',),
+        vocabulary='SamplePointsVocabulary',
+        relationship='SampleTypeSamplePoint',
+        widget=brw(
             label=_("Sample Points"),
-            description =_("The list of sample points from which this sample "
+            description=_("The list of sample points from which this sample "
                            "type can be collected.  If no sample points are "
                            "selected, then all sample points are available."),
         ),

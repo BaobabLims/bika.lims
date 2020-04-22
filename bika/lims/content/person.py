@@ -20,104 +20,105 @@ from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',
-        widget = StringWidget(
-            label = _("Salutation",
+        widget=StringWidget(
+            label=_("Salutation",
                       "Title"),
             description=_("Greeting title eg. Mr, Mrs, Dr"),
         ),
     ),
     StringField('Firstname',
-        required = 1,
-        widget = StringWidget(
-            label=_("Firstname"),
+        required=1,
+        widget=StringWidget(
+            label=_("First name"),
         ),
     ),
     StringField('Middleinitial',
-        required = 0,
-        widget = StringWidget(
+        required=0,
+        widget=StringWidget(
             label=_("Middle initial"),
         ),
     ),
     StringField('Middlename',
-        required = 0,
-        widget = StringWidget(
+        required=0,
+        widget=StringWidget(
             label=_("Middle name"),
         ),
     ),
     StringField('Surname',
-        required = 1,
-        widget = StringWidget(
+        required=1,
+        widget=StringWidget(
             label=_("Surname"),
         ),
     ),
     ComputedField('Fullname',
-        expression = 'context.getFullname()',
-        searchable = 1,
-        widget = ComputedWidget(
+        expression='context.getFullname()',
+        searchable=1,
+        widget=ComputedWidget(
             label=_("Full Name"),
-            visible = {'edit': 'invisible', 'view': 'invisible'},
+            visible={'edit': 'invisible', 'view': 'invisible'},
         ),
     ),
     StringField('Username',
-        widget = StringWidget(
-            visible = False
+        widget=StringWidget(
+            visible=False
         ),
     ),
     StringField('EmailAddress',
-        schemata = 'Email Telephone Fax',
-        searchable = 1,
-        widget = StringWidget(
+        schemata='Email Telephone Fax',
+        searchable=1,
+        widget=StringWidget(
             label=_("Email Address"),
         ),
     ),
     StringField('BusinessPhone',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
+        schemata='Email Telephone Fax',
+        widget=StringWidget(
             label=_("Phone (business)"),
         ),
     ),
     StringField('BusinessFax',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
+        schemata='Email Telephone Fax',
+        widget=StringWidget(
             label=_("Fax (business)"),
         ),
     ),
     StringField('HomePhone',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
+        schemata='Email Telephone Fax',
+        widget=StringWidget(
             label=_("Phone (home)"),
         ),
     ),
     StringField('MobilePhone',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
+        schemata='Email Telephone Fax',
+        widget=StringWidget(
             label=_("Phone (mobile)"),
         ),
     ),
     StringField('JobTitle',
-        widget = StringWidget(
+        widget=StringWidget(
             label=_("Job title"),
         ),
     ),
     StringField('Department',
-        widget = StringWidget(
+        widget=StringWidget(
             label=_("Department"),
         ),
     ),
     AddressField('PhysicalAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
+        schemata='Address',
+        widget=AddressWidget(
            label=_("Physical address"),
         ),
     ),
     AddressField('PostalAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
+        schemata='Address',
+        widget=AddressWidget(
            label=_("Postal address"),
         ),
     ),
 ),
 )
+
 
 class Person(BaseFolder):
     security = ClassSecurityInfo()
