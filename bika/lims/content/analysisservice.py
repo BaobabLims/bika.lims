@@ -291,7 +291,7 @@ schema = BikaSchema.copy() + Schema((
                           "testing methodology. Results "
                           "entered which are less than "
                           "this value will be reported "
-                          "as < LDL")
+                          "as < LDL.")
         ),
     ),
 
@@ -308,7 +308,7 @@ schema = BikaSchema.copy() + Schema((
                           "using the specified testing "
                           "methodology. Results entered "
                           "which are greater than this value "
-                          "will be reported as > UDL")
+                          "will be reported as > UDL.")
         ),
     ),
 
@@ -343,7 +343,7 @@ schema = BikaSchema.copy() + Schema((
                           "field in results entry views. By using "
                           "this selector, the analyst will be able "
                           "to set the value as a Detection Limit "
-                          "(LDL or UDL) instead of a regular result"),
+                          "(LDL or UDL) instead of a regular result."),
         ),
     ),
 
@@ -360,7 +360,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Allow Manual Detection Limit input"),
             description=_("Allow the analyst to manually "
                           "replace the default Detection Limits "
-                          "(LDL and UDL) on results entry views"),
+                          "(LDL and UDL) on results entry views."),
         ),
     ),
 
@@ -370,7 +370,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Report as Dry Matter"),
-            description=_("These results can be reported as dry matter"),
+            description=_("These results can be reported as dry matter."),
         ),
     ),
 
@@ -384,7 +384,7 @@ schema = BikaSchema.copy() + Schema((
             description=_(
                 "Indicates whether file attachments, e.g. microscope images, "
                 "are required for this analysis and whether file upload function "
-                "will be available for it on data capturing screens"),
+                "will be available for it on data capturing screens."),
             format='select',
         ),
     ),
@@ -401,7 +401,7 @@ schema = BikaSchema.copy() + Schema((
                 "The unique keyword used to identify the analysis service in "
                 "import files of bulk AR requests and results imports from instruments. "
                 "It is also used to identify dependent analysis services in user "
-                "defined results calculations"),
+                "defined results calculations."),
         ),
     ),
 
@@ -614,7 +614,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("Select if the calculation to be used is the " + \
                           "calculation set by default in the default " + \
                           "method. If unselected, the calculation can " + \
-                          "be selected manually"),
+                          "be selected manually."),
         )
     ),
 
@@ -674,7 +674,7 @@ schema = BikaSchema.copy() + Schema((
             description=_(
                 "If required, select a calculation for the analysis here. "
                 "Calculations can be configured under the calculations item "
-                "in the LIMS set-up"),
+                "in the LIMS set-up."),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         ),
@@ -715,7 +715,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Maximum turn-around time"),
             description=_(
                 "Maximum time allowed for completion of the analysis. "
-                "A late analysis alert is raised when this period elapses"),
+                "A late analysis alert is raised when this period elapses."),
         ),
     ),
 
@@ -727,7 +727,7 @@ schema = BikaSchema.copy() + Schema((
             description=_(
                 "When the results of duplicate analyses on worksheets, "
                 "carried out on the same sample, differ with more than "
-                "this percentage, an alert is raised"),
+                "this percentage, an alert is raised."),
         ),
     ),
 
@@ -739,7 +739,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Accredited"),
             description=_(
                 "Check this box if the analysis service is included in the "
-                "laboratory's schedule of accredited analyses"),
+                "laboratory's schedule of accredited analyses."),
         ),
     ),
 
@@ -756,7 +756,7 @@ schema = BikaSchema.copy() + Schema((
                 "The results of field analyses are captured during sampling "
                 "at the sample point, e.g. the temperature of a water sample "
                 "in the river where it is sampled. Lab analyses are done in "
-                "the laboratory"),
+                "the laboratory."),
         ),
     ),
 
@@ -773,7 +773,7 @@ schema = BikaSchema.copy() + Schema((
             checkbox_bound=0,
             label=_("Analysis Category"),
             description=_(
-                "The category the analysis service belongs to"),
+                "The category the analysis service belongs to."),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         ),
@@ -796,7 +796,7 @@ schema = BikaSchema.copy() + Schema((
         widget=DecimalWidget(
             label=_("Bulk price (excluding VAT)"),
             description=_(
-                "The price charged per analysis for clients who qualify for bulk discounts"),
+                "The price charged per analysis for clients who qualify for bulk discounts."),
         ),
     ),
 
@@ -826,7 +826,7 @@ schema = BikaSchema.copy() + Schema((
         default_method='getDefaultVAT',
         widget=DecimalWidget(
             label=_("VAT %"),
-            description=_("Enter percentage value eg. 14.0"),
+            description=_("Enter percentage value eg. 14.0."),
         ),
     ),
 
@@ -858,7 +858,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Department"),
-            description=_("The laboratory department"),
+            description=_("The laboratory department."),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         ),
@@ -979,7 +979,7 @@ schema = BikaSchema.copy() + Schema((
             description=_(
                 "Please list all options for the analysis result if you want to restrict "
                 "it to specific options only, e.g. 'Positive', 'Negative' and "
-                "'Indeterminable'.  The option's result value must be a number"),
+                "'Indeterminable'.  The option's result value must be a number."),
         ),
     ),
 
@@ -991,7 +991,7 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Separate Container"),
             description=_("Check this box to ensure a separate sample " + \
-                          "container is used for this analysis service"),
+                          "container is used for this analysis service."),
         ),
     ),
 
@@ -1010,7 +1010,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("Select a default preservation for this " + \
                           "analysis service. If the preservation depends on " + \
                           "the sample type combination, specify a preservation " + \
-                          "per sample type in the table below"),
+                          "per sample type in the table below."),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         ),
@@ -1033,7 +1033,7 @@ schema = BikaSchema.copy() + Schema((
                 "analysis service. If the container to be used "
                 "depends on the sample type and preservation "
                 "combination, specify the container in the sample "
-                "type table below"),
+                "type table below."),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         ),
@@ -1061,7 +1061,7 @@ schema = BikaSchema.copy() + Schema((
                 "If enabled, this analysis and its results "
                 "will not be displayed by default in reports. "
                 "This setting can be overrided in Analysis "
-                "Profile and/or Analysis Request"),
+                "Profile and/or Analysis Request."),
         ),
     ),
 
@@ -1078,7 +1078,7 @@ schema = BikaSchema.copy() + Schema((
                 "those users with a role assigned that allows them to verify "
                 "results (by default, managers, labmanagers and verifiers). "
                 "The option set here has priority over the option set in Bika "
-                "Setup"),
+                "Setup."),
             format="select",
         ),
     ),
@@ -1094,7 +1094,7 @@ schema = BikaSchema.copy() + Schema((
                 "Number of required verifications from different users with "
                 "enough privileges before a given result for this analysis "
                 "being considered as 'verified'. The option set here has "
-                "priority over the option set in Bika Setup"),
+                "priority over the option set in Bika Setup."),
             format="select",
         ),
     ),
@@ -1106,7 +1106,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         widget=StringWidget(
             label=_("Commercial ID"),
-            description=_("The service's commercial ID for accounting purposes")
+            description=_("The service's commercial ID for accounting purposes.")
         ),
     ),
 
@@ -1117,7 +1117,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         widget=StringWidget(
             label=_("Protocol ID"),
-            description=_("The service's analytical protocol ID")
+            description=_("The service's analytical protocol ID.")
         ),
     ),
 ))

@@ -16,7 +16,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.ATExtensions.ateapi import RecordsField
 
 from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
@@ -24,7 +23,6 @@ from Products.Archetypes.atapi import DecimalWidget
 from Products.Archetypes.atapi import FixedPointField
 from Products.Archetypes.atapi import IntegerField
 from Products.Archetypes.atapi import IntegerWidget
-from Products.Archetypes.atapi import LabelWidget
 from Products.Archetypes.atapi import LinesField
 from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import ReferenceField
@@ -102,7 +100,7 @@ class IDFormattingField(RecordsField):
             'sequence_type': 'selection',
             'counter_type': 'selection',
             'split_length': 'int',
-            },
+        },
         'subfield_vocabularies': {
             'sequence_type': 'getSequenceTypes',
             'counter_type': 'getCounterTypes',
@@ -116,14 +114,14 @@ class IDFormattingField(RecordsField):
 
     def getSequenceTypes(self, instance=None):
         return DisplayList(
-            [('', ''), 
-             ('counter','Counter'),
+            [('', ''),
+             ('counter', 'Counter'),
              ('generated', 'Generated')])
 
     def getCounterTypes(self, instance=None):
         return DisplayList(
-            [('', ''), 
-             ('backreference','Backreference'),
+            [('', ''),
+             ('backreference', 'Backreference'),
              ('contained', 'Contained')])
 
 
@@ -142,7 +140,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=0,
         widget=IntegerWidget(
             label=_("Password lifetime"),
-            description=_("The number of days before a password expires. 0 disables password expiry"),
+            description=_("The number of days before a password expires. 0 disables password expiry."),
         )
     ),
     IntegerField(
@@ -154,7 +152,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Automatic log-off"),
             description=_(
                 "The number of minutes before a user is automatically logged off. "
-                "0 disables automatic log-off"),
+                "0 disables automatic log-off."),
         )
     ),
     BooleanField(
@@ -223,7 +221,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default='',
         widget=SelectionWidget(
             label=_("Country"),
-            description=_("Select the country the site will show by default"),
+            description=_("Select the country the site will show by default."),
             format='select',
         )
     ),
@@ -236,7 +234,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "The discount percentage entered here, is applied to the prices for clients "
                 "flagged as 'members', normally co-operative members or associates deserving "
-                "of this discount"),
+                "of this discount."),
         )
     ),
     FixedPointField(
@@ -247,7 +245,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("VAT %"),
             description=_(
                 "Enter percentage value eg. 14.0. This percentage is applied system wide "
-                "but can be overwrittem on individual items"),
+                "but can be overwrittem on individual items."),
         )
     ),
     StringField(
@@ -268,7 +266,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=SCINOTATION_OPTIONS,
         widget=SelectionWidget(
             label=_("Default scientific notation format for reports"),
-            description=_("Preferred scientific notation format for reports"),
+            description=_("Preferred scientific notation format for reports."),
             format='select',
         )
     ),
@@ -282,7 +280,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "Using too few data points does not make statistical sense. "
                 "Set an acceptable minimum number of results before QC statistics "
-                "will be calculated and plotted"),
+                "will be calculated and plotted."),
         )
     ),
     BooleanField(
@@ -307,7 +305,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "Set the maximum number of analysis requests per results email. "
                 "Too many columns per email are difficult to read for some clients "
-                "who prefer fewer results per email"),
+                "who prefer fewer results per email."),
         )
     ),
     TextField(
@@ -349,7 +347,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Categorise analysis services"),
-            description=_("Group analysis services by category in the LIMS tables, helpful when the list is long")
+            description=_("Group analysis services by category in the LIMS tables, helpful when the list is long.")
         ),
     ),
     BooleanField(
@@ -400,7 +398,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Add a remarks field to all analyses"),
             description=_(
                 "If enabled, a free text field will be displayed close to "
-                "each analysis in results entry view"
+                "each analysis in results entry view."
             )
         ),
     ),
@@ -430,16 +428,17 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "Number of required verifications before a given result being "
                 "considered as 'verified'. This setting can be overrided for "
-                "any Analysis in Analysis Service edit view. By default, 1"),
+                "any Analysis in Analysis Service edit view. By default, 1."),
         ),
     ),
-    StringField('TypeOfmultiVerification',
-        schemata = "Analyses",
-        default = 'self_multi_enabled',
-        vocabulary = MULTI_VERIFICATION_TYPE,
-        widget = SelectionWidget(
+    StringField(
+        'TypeOfmultiVerification',
+        schemata="Analyses",
+        default='self_multi_enabled',
+        vocabulary=MULTI_VERIFICATION_TYPE,
+        widget=SelectionWidget(
             label=_("Multi Verification type"),
-            description = _(
+            description=_(
                 "Choose type of multiple verification for the same user."
                 "This setting can enable/disable verifying/consecutively verifying"
                 "more than once for the same user."),
@@ -470,7 +469,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "'Classic' indicates importing analysis requests per sample and "
                 "analysis service selection. With 'Profiles', analysis profile keywords "
-                "are used to select multiple analysis services together"),
+                "are used to select multiple analysis services together."),
         )
     ),
     StringField(
@@ -484,7 +483,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "The system wide default configuration to indicate "
                 "whether file attachments are required, permitted or not "
-                "per analysis request"),
+                "per analysis request."),
         )
     ),
     StringField(
@@ -498,7 +497,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "Same as the above, but sets the default on analysis services. "
                 "This setting can be set per individual analysis on its "
-                "own configuration"),
+                "own configuration."),
         )
     ),
     StringField(
@@ -508,7 +507,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=".",
         widget=SelectionWidget(
             label=_("Default decimal mark"),
-            description=_("Preferred decimal mark for results"),
+            description=_("Preferred decimal mark for results."),
             format='select',
         )
     ),
@@ -519,7 +518,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=SCINOTATION_OPTIONS,
         widget=SelectionWidget(
             label=_("Default scientific notation format for results"),
-            description=_("Preferred scientific notation format for results"),
+            description=_("Preferred scientific notation format for results."),
             format='select',
         )
     ),
@@ -583,9 +582,9 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Enable Sampling Scheduling"),
             description=_(
-                "Select this to allow a Sampling Coordinator to" +
-                " schedule a sampling. This functionality only takes effect" +
-                " when 'Sampling workflow' is active")
+                "Select this to allow a Sampling Coordinator to"
+                " schedule a sampling. This functionality only takes effect"
+                " when 'Sampling workflow' is active.")
         ),
     ),
     BooleanField(
@@ -594,7 +593,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Display individual sample partitions "),
-            description=_("Turn this on if you want to work with sample partitions")
+            description=_("Turn this on if you want to work with sample partitions.")
         ),
     ),
     BooleanField(
@@ -603,7 +602,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sample Preservation"),
-            description=_("")
+            description=_("Turn this on to enable sample preservation.")
         ),
     ),
     DurationField(
@@ -616,7 +615,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "The number of days before a sample expires and cannot be analysed "
                 "any more. This setting can be overwritten per individual sample type "
-                "in the sample types setup"),
+                "in the sample types setup."),
         )
     ),
     RecordsField(
@@ -665,7 +664,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "Select 'Register' if you want stickers to be automatically printed when "
                 "new ARs or sample records are created. Select 'Receive' to print stickers "
-                "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+                "when ARs or Samples are received. Select 'None' to disable automatic printing."),
         )
     ),
     StringField(
@@ -675,7 +674,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Sticker templates"),
-            description=_("Select which sticker to print when automatic sticker printing is enabled"),
+            description=_("Select which sticker to print when automatic sticker printing is enabled."),
         )
     ),
     StringField(
@@ -686,7 +685,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Small sticker"),
-            description=_("Select which sticker should be used as the 'small' sticker by default")
+            description=_("Select which sticker should be used as the 'small' sticker by default.")
         )
     ),
     StringField(
@@ -697,23 +696,22 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Large sticker"),
-            description=_("Select which sticker should be used as the 'large' sticker by default")
+            description=_("Select which sticker should be used as the 'large' sticker by default.")
         )
     ),
     IDFormattingField(
         'IDFormatting',
         schemata="ID Server",
-        default=[
-             {'form': 'AI-{seq:03d}', 'portal_type': 'ARImport', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': 'B-{seq:03d}', 'portal_type': 'Batch', 'prefix': 'batch', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': 'D-{seq:03d}', 'portal_type': 'DuplicateAnalysis', 'prefix': 'duplicate', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': 'I-{seq:03d}', 'portal_type': 'Invoice', 'prefix': 'invoice', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': 'QC-{seq:03d}', 'portal_type': 'ReferenceSample', 'prefix': 'refsample', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': 'SA-{seq:03d}', 'portal_type': 'ReferenceAnalysis', 'prefix': 'refanalysis', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': 'WS-{seq:03d}', 'portal_type': 'Worksheet', 'prefix': 'worksheet', 'sequence_type': 'generated', 'split_length': 1},
-             {'form': '{sampleType}-{seq:04d}', 'portal_type': 'Sample', 'prefix': 'sample', 'sequence_type': 'generated', 'split_length': 1},
-             {'context': 'sample', 'counter_reference': 'AnalysisRequestSample', 'counter_type': 'backreference', 'form': '{sampleId}-R{seq:02d}', 'portal_type': 'AnalysisRequest', 'sequence_type': 'counter'},
-             {'context': 'sample', 'counter_reference': 'SamplePartition', 'counter_type': 'contained', 'form': '{sampleId}-P{seq:d}', 'portal_type': 'SamplePartition', 'sequence_type': 'counter'}],
+        default=[{'form': 'AI-{seq:03d}', 'portal_type': 'ARImport', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': 'B-{seq:03d}', 'portal_type': 'Batch', 'prefix': 'batch', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': 'D-{seq:03d}', 'portal_type': 'DuplicateAnalysis', 'prefix': 'duplicate', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': 'I-{seq:03d}', 'portal_type': 'Invoice', 'prefix': 'invoice', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': 'QC-{seq:03d}', 'portal_type': 'ReferenceSample', 'prefix': 'refsample', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': 'SA-{seq:03d}', 'portal_type': 'ReferenceAnalysis', 'prefix': 'refanalysis', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': 'WS-{seq:03d}', 'portal_type': 'Worksheet', 'prefix': 'worksheet', 'sequence_type': 'generated', 'split_length': 1},
+                 {'form': '{sampleType}-{seq:04d}', 'portal_type': 'Sample', 'prefix': 'sample', 'sequence_type': 'generated', 'split_length': 1},
+                 {'context': 'sample', 'counter_reference': 'AnalysisRequestSample', 'counter_type': 'backreference', 'form': '{sampleId}-R{seq:02d}', 'portal_type': 'AnalysisRequest', 'sequence_type': 'counter'},
+                 {'context': 'sample', 'counter_reference': 'SamplePartition', 'counter_type': 'contained', 'form': '{sampleId}-P{seq:d}', 'portal_type': 'SamplePartition', 'sequence_type': 'counter'}],
         widget=RecordsWidget(
             label=_("Formatting Configuration"),
             allowDelete=True,
@@ -723,15 +721,14 @@ The ID Server in Bika LIMS provides IDs for content items base of the given form
 Configuration Settings:
 * format:
   - a python format string constructed from predefined variables like sampleId, client, sampleType.
-  - special variable 'seq' must be positioned last in the format string
+  - special variable 'seq' must be positioned last in the format string.
 * sequence type: [generated|counter]
 * context: if type counter, provides context the counting function
 * counter type: [backreference|contained]
 * counter reference: a parameter to the counting function
 * prefix: default prefix if none provided in format string
 * split length: the number of parts to be included in the prefix
-"""
-                )
+""")
         )
     ),
     BooleanField(
@@ -742,7 +739,7 @@ Configuration Settings:
             label=_("Use external ID server"),
             description=_(
                 "Check this if you want to use a separate ID server. "
-                "Prefixes are configurable separately in each Bika site")
+                "Prefixes are configurable separately in each Bika site.")
         ),
     ),
     StringField(

@@ -23,38 +23,39 @@ from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from zope.interface import Interface, implements
-import sys
-from bika.lims.interfaces import IAnalysisProfile
 
 schema = BikaSchema.copy() + Schema((
-    StringField('ProfileKey',
-        widget = StringWidget(
-            label = _("Profile Keyword"),
-            description = _("The profile's keyword is used to uniquely identify " + \
+    StringField(
+        'ProfileKey',
+        widget=StringWidget(
+            label=_("Profile Keyword"),
+            description=_("The profile's keyword is used to uniquely identify " + \
                           "it in import files. It has to be unique, and it may " + \
                           "not be the same as any Calculation Interim field ID."),
         ),
     ),
-    ReferenceField('Service',
-        schemata = 'Analyses',
-        required = 1,
-        multiValued = 1,
-        allowed_types = ('AnalysisService',),
-        relationship = 'AnalysisProfileAnalysisService',
-        widget = AnalysisProfileAnalysesWidget(
-            label = _("Profile Analyses"),
-            description = _("The analyses included in this profile, grouped per category"),
+    ReferenceField(
+        'Service',
+        schemata='Analyses',
+        required=1,
+        multiValued=1,
+        allowed_types=('AnalysisService',),
+        relationship='AnalysisProfileAnalysisService',
+        widget=AnalysisProfileAnalysesWidget(
+            label=_("Profile Analyses"),
+            description=_("The analyses included in this profile, grouped per category."),
         )
     ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain', ),
+    TextField(
+        'Remarks',
+        searchable=True,
+        default_content_type='text/plain',
+        allowable_content_types=('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _("Remarks"),
-            append_only = True,
+        widget=TextAreaWidget(
+            macro="bika_widgets/remarks",
+            label=_("Remarks"),
+            append_only=True,
         ),
     ),
     # Custom settings for the assigned analysis services
@@ -62,12 +63,14 @@ schema = BikaSchema.copy() + Schema((
     # Fields:
     #   - uid: Analysis Service UID
     #   - hidden: True/False. Hide/Display in results reports
-    RecordsField('AnalysisServicesSettings',
-         required=0,
-         subfields=('uid', 'hidden',),
-         widget=ComputedWidget(visible=False),
+    RecordsField(
+        'AnalysisServicesSettings',
+        required=0,
+        subfields=('uid', 'hidden',),
+        widget=ComputedWidget(visible=False),
     ),
-    StringField('CommercialID',
+    StringField(
+        'CommercialID',
         searchable=1,
         required=0,
         schemata='Accounting',
@@ -79,13 +82,14 @@ schema = BikaSchema.copy() + Schema((
     ),
     # When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the
     # the analysis profile's specific VAT
-    BooleanField('UseAnalysisProfilePrice',
+    BooleanField(
+        'UseAnalysisProfilePrice',
         default=False,
         schemata='Accounting',
         widget=BooleanWidget(
             label=_("Use Analysis Profile Price"),
             description=_("When it's set, the system uses the analysis profile's price to quote and the system's VAT is"
-                          " overridden by the analysis profile's specific VAT"),
+                          " overridden by the analysis profile's specific VAT."),
         )
     ),
     # The price will only be used if the checkbox "use analysis profiles' price" is set.
@@ -100,23 +104,25 @@ schema = BikaSchema.copy() + Schema((
     ),
     # When the checkbox "use analysis profiles' price" is set, the AnalysisProfilesVAT should override
     # the system's VAT
-    FixedPointField('AnalysisProfileVAT',
-        schemata = "Accounting",
-        default = '14.00',
-        widget = DecimalWidget(
+    FixedPointField(
+        'AnalysisProfileVAT',
+        schemata="Accounting",
+        default='14.00',
+        widget=DecimalWidget(
             label=_("VAT %"),
             description=_(
                 "Enter percentage value eg. 14.0. This percentage is applied on the Analysis Profile only, overriding "
-                "the systems VAT"),
+                "the systems VAT."),
                 visible={'view': 'visible', 'edit': 'visible'},
         )
     ),
     # This VAT amount is computed using the AnalysisProfileVAT instead of systems VAT
-    ComputedField('VATAmount',
+    ComputedField(
+        'VATAmount',
         schemata="Accounting",
         expression='context.getVATAmount()',
         widget=ComputedWidget(
-            label = _("VAT"),
+            label=_("VAT"),
             visible={'view': 'visible', 'edit': 'invisible'},
             ),
     ),
@@ -124,7 +130,7 @@ schema = BikaSchema.copy() + Schema((
           schemata="Accounting",
           expression='context.getTotalPrice()',
           widget=ComputedWidget(
-              label = _("Total price"),
+              label=_("Total price"),
               visible={'edit': 'hidden', }
           ),
     ),
@@ -133,6 +139,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].widget.visible = True
 schema['description'].widget.visible = True
 IdField = schema['id']
+
 
 class AnalysisProfile(BaseContent):
     security = ClassSecurityInfo()

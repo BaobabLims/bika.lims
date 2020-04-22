@@ -50,14 +50,16 @@ schema = BikaSchema.copy() + Schema((
         widget=BikaRecordsWidget(
             label=_("Calculation Interim Fields"),
             description=_(
-                "Define interim fields such as vessel mass, dilution factors, "
-                "should your calculation require them. The field title "
-                "specified here will be used as column headers and field "
-                "descriptors where the interim fields are displayed. If "
-                "'Apply wide' is enabled the field will be shown in a "
-                "selection box on the top of the worksheet, allowing to apply "
-                "a specific value to all the corresponding fields on the "
-                "sheet."),
+                """Define interim fields such as vessel mass, dilution factors,
+                should your calculation require them. The field title
+                specified here will be used as column headers and field
+                descriptors where the interim fields are displayed. If
+                'Apply wide' is enabled the field will be shown in a
+                selection box on the top of the worksheet, allowing to apply
+                a specific value to all the corresponding fields on the
+                sheet. <br />
+                Hidden fields will not be shown in the results capture options.
+                """),
         )
     ),
 
@@ -120,7 +122,7 @@ schema = BikaSchema.copy() + Schema((
                 "as variables. Enclose them in square brackets [ ].</p>"
                 "<p>E.g, the calculation for Total Hardness, the total of "
                 "Calcium (ppm) and Magnesium (ppm) ions in water, is entered "
-                "as [Ca] + [Mg], where Ca and MG are the keywords for those "
+                "as [Ca] + [Mg], where Ca and Mg are the keywords for those "
                 "two Analysis Services.</p>"),
         )
     ),
@@ -136,7 +138,7 @@ schema = BikaSchema.copy() + Schema((
         widget=RecordsWidget(
             label=_("Test Parameters"),
             description=_("To test the calculation, enter values here for all "
-                          "calculation parameters.  This includes Interim "
+                          "calculation parameters.  This includes interim "
                           "fields defined above, as well as any services that "
                           "this calculation depends on to calculate results."),
             allowDelete=False,
