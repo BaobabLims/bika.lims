@@ -31,9 +31,9 @@ class Report(BrowserView):
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analysis requests not invoiced")
+        headings['header'] = _("Analysis requests invoiced")
         headings['subheader'] = _(
-            "Published Analysis Requests which have not been invoiced")
+            "Published Analysis Requests which have been invoiced")
 
         count_all = 0
 
@@ -113,7 +113,7 @@ class Report(BrowserView):
         # table footer data
         footlines = []
         footline = []
-        footitem = {'value': _('Number of analyses retested for period'),
+        footitem = {'value': _('Number of analyses invoiced this for period'),
                     'colspan': 4,
                     'class': 'total_label'}
         footline.append(footitem)
